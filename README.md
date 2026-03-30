@@ -1,52 +1,70 @@
-<h1 align = "center">Personal Portfolio Website</h1>
-<h3 align="center">Responsive Portfolio Website using HTML, CSS, and Bootstrap 5</h3>
+# Dynamic Portfolio (React + Redux + Tailwind + Express + SQLite/Turso)
 
-Follow Me on ➡️ [Linkedin](https://www.linkedin.com/in/vignesh-renugambal-b070b8293?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app)
+This project has been upgraded from a static HTML portfolio to a full-stack dynamic portfolio.
 
-<h1 align="center"> Website Preview </h1>
+## Stack
 
-### For Live Overview ➡️ [Portfolio Website](https://vinay-vicky.github.io/Portfolio-v0.1/)
+- **Frontend:** React (Vite), Redux Toolkit, Tailwind CSS, React Router
+- **Backend:** Node.js, Express
+- **Database:** SQLite via `@libsql/client` (local file or Turso cloud)
 
-## Features 📋
+## Project structure
 
-⚡️ Fully Responsive.
-⚡️ Valid HTML, CSS & Bootstrap 5.
-⚡️ Smooth scrolling in each section.
-⚡️ Compatible with all mobile devices and with a beautiful and pleasant user interface.
-⚡️ Easy to modify.
+- `frontend/` → React app
+- `backend/` → Express API + DB schema/seed
+- `assets/`, `index.html`, etc. → legacy static version (kept for reference)
 
-## Installation & Deployment 📦
+## Environment setup
 
-- Clone the repository and modify the content of `<b>` index.html `</b>`
-- Add or remove images from `assets/img/` directory as per your requirement.
-- Update the info of `projects` folder according to your need
-- To deploy your website, first you need to create github repository with name `<your-github-username>.github.io` and push the generated code to the `master` branch.
+Create these files from examples:
 
-## Sections 📚
+- `backend/.env` from `backend/.env.example`
+- `frontend/.env` from `frontend/.env.example`
 
-✔️ About
-✔️ Education
-✔️ Projects
-✔️ Skills
-✔️ Language
-✔️ Resume
-✔️ Contact Info
+For quick local development, you can use:
 
-## Contributing 💡
+- Backend DB URL: `file:./data/portfolio.db`
+- Frontend API URL: `http://localhost:5000/api`
 
-#### Step 1
+### Turso setup
 
-- **Option 1**
+When you are ready to use Turso cloud, set in `backend/.env`:
 
-  - 🍴 Fork this repo!
-- **Option 2**
+- `TURSO_DATABASE_URL=libsql://<your-db>.turso.io`
+- `TURSO_AUTH_TOKEN=<your-turso-token>`
 
-  - 👯 Clone this repo to your local machine.
+## Install and run
 
-#### Step 2
+### 1) Backend
 
-- **Build your code** 🔨🔨🔨
+1. Install dependencies in `backend/`
+2. Run seed once to populate portfolio content
+3. Start dev server
 
-#### Step 3
+Scripts:
 
-- 🔃 Create a new pull request.
+- `npm run db:seed`
+- `npm run dev`
+
+### 2) Frontend
+
+1. Install dependencies in `frontend/`
+2. Start Vite dev server
+
+Script:
+
+- `npm run dev`
+
+## API endpoints
+
+- `GET /api/health` → health check
+- `GET /api/portfolio` → profile + experiences + projects
+- `POST /api/contact` → save contact message
+
+## Next improvements you can add
+
+- Admin dashboard to edit profile/projects from UI
+- Authentication for admin routes
+- Image upload for project thumbnails
+- Pagination/filtering for projects
+- Deployment with frontend + backend on separate services
