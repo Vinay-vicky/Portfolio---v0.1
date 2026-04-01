@@ -33,6 +33,8 @@ When you are ready to use Turso cloud, set in `backend/.env`:
 - `TURSO_DATABASE_URL=libsql://<your-db>.turso.io`
 - `TURSO_AUTH_TOKEN=<your-turso-token>`
 
+> Note: `npm run db:seed` (executed from `backend/`) reads `backend/.env`. Values in root `.env` are not used by the seed script.
+
 ## Install and run
 
 ### 1) Backend
