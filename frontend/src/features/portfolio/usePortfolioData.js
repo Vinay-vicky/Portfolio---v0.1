@@ -6,13 +6,18 @@ const usePortfolioData = () => {
   const dispatch = useDispatch()
   const portfolio = useSelector((state) => state.portfolio)
 
+  const refreshData = () => dispatch(loadPortfolio())
+
   useEffect(() => {
     if (!portfolio.profile && !portfolio.loading) {
       dispatch(loadPortfolio())
     }
   }, [dispatch, portfolio.profile, portfolio.loading])
 
-  return portfolio
+  return {
+    ...portfolio,
+    refreshData,
+  }
 }
 
 export default usePortfolioData
