@@ -1,6 +1,8 @@
 import axios from 'axios'
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+const apiBaseUrl =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? 'https://portfolio-glhq.onrender.com/api' : 'http://localhost:5000/api')
 const backendBaseUrl = apiBaseUrl.replace(/\/api\/?$/, '')
 
 export const api = axios.create({ baseURL: apiBaseUrl })
