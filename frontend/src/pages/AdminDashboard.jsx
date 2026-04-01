@@ -49,15 +49,15 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-8">
+    <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
       {/* Sidebar */}
-      <aside className="w-full md:w-64 shrink-0 space-y-6">
-        <div className="glass-card !p-5 sticky top-24 space-y-2">
-          <div className="flex items-center gap-3 px-3 py-2 mb-4 border-b border-white/10 pb-4">
-            <LayoutDashboard className="text-indigo-400" />
-            <h2 className="font-bold text-white text-lg">Admin CMS</h2>
+      <aside className="w-full space-y-4">
+        <div className="glass-card sticky top-24 !p-4 sm:!p-5">
+          <div className="mb-4 flex items-center gap-3 border-b border-slate-200 pb-4">
+            <LayoutDashboard className="text-blue-700" />
+            <h2 className="text-lg font-black text-slate-900">Admin CMS</h2>
           </div>
-          
+
           <nav className="flex flex-col gap-1">
             {tabs.map((tab) => {
               const Icon = tab.icon
@@ -67,25 +67,27 @@ function AdminDashboard() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    isActive 
-                      ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' 
-                      : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
+                    isActive
+                      ? 'border border-blue-200 bg-blue-50 text-blue-700'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
-                  <Icon size={18} className={isActive ? 'text-indigo-400' : ''} />
+                  <Icon size={18} className={isActive ? 'text-blue-700' : ''} />
                   {tab.label}
                 </button>
               )
             })}
           </nav>
-          
-          <div className="pt-4 mt-4 border-t border-white/10">
+
+          <div className="mt-4 border-t border-slate-200 pt-4">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300"
+              className="w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50"
             >
-              <LogOut size={18} />
+              <span className="inline-flex items-center gap-3">
+                <LogOut size={18} />
               Sign Out
+              </span>
             </button>
           </div>
         </div>
@@ -93,8 +95,8 @@ function AdminDashboard() {
 
       {/* Main Content */}
       <div className="flex-1 min-w-0">
-        <div className="glass-card min-h-[600px]">
-          {error && <div className="p-4 m-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg">{error}</div>}
+        <div className="glass-card min-h-[560px] !p-0">
+          {error && <div className="m-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">{error}</div>}
           {renderContent()}
         </div>
       </div>

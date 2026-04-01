@@ -31,26 +31,32 @@ function ContactPage() {
   }
 
   return (
-    <section className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <section className="mx-auto max-w-3xl glass-card">
       <div className="text-center">
-        <div className="bg-gradient-primary-to-secondary mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full text-lg text-white">
+        <div className="bg-gradient-primary-to-secondary mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full text-lg text-white shadow-md shadow-blue-200">
           ✉
         </div>
-        <h1 className="section-title text-slate-800">Get in touch</h1>
-        <p className="mt-2 text-slate-600">Let&apos;s work together!</p>
+        <h1 className="section-title text-slate-900">Get in touch</h1>
+        <p className="mt-2 text-sm text-slate-600 sm:text-base">Let&apos;s work together!</p>
       </div>
 
       <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-        <input className="w-full rounded-md border border-slate-300 bg-white p-3 text-slate-800" name="name" value={form.name} onChange={handleChange} placeholder="Full name" required />
-        <input className="w-full rounded-md border border-slate-300 bg-white p-3 text-slate-800" name="email" type="email" value={form.email} onChange={handleChange} placeholder="Email" required />
-        <input className="w-full rounded-md border border-slate-300 bg-white p-3 text-slate-800" name="phone" value={form.phone} onChange={handleChange} placeholder="Phone" />
-        <input className="w-full rounded-md border border-slate-300 bg-white p-3 text-slate-800" name="subject" value={form.subject} onChange={handleChange} placeholder="Subject" />
-        <textarea className="min-h-36 w-full rounded-md border border-slate-300 bg-white p-3 text-slate-800" name="message" value={form.message} onChange={handleChange} placeholder="Your message" required />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <input className="soft-input" name="name" value={form.name} onChange={handleChange} placeholder="Full name" required />
+          <input className="soft-input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="Email" required />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <input className="soft-input" name="phone" value={form.phone} onChange={handleChange} placeholder="Phone" />
+          <input className="soft-input" name="subject" value={form.subject} onChange={handleChange} placeholder="Subject" />
+        </div>
+
+        <textarea className="soft-input min-h-36 resize-y" name="message" value={form.message} onChange={handleChange} placeholder="Your message" required />
 
         <button
           type="submit"
           disabled={contactStatus === 'loading'}
-          className="rounded-md bg-blue-600 px-5 py-2 font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-blue-300"
+          className="btn-primary w-full sm:w-auto disabled:cursor-not-allowed disabled:bg-blue-300"
         >
           {contactStatus === 'loading' ? 'Sending...' : 'Send message'}
         </button>

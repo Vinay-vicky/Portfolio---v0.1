@@ -1,8 +1,8 @@
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import Navbar from './components/Navbar'
-import HomePage from './pages/HomePage'
-import ResumePage from './pages/ResumePage'
+import HomePageResponsive from './pages/HomePageResponsive'
+import ResumePageResponsive from './pages/ResumePageResponsive'
 import ProjectsPage from './pages/ProjectsPage'
 import ContactPage from './pages/ContactPage'
 import LoginPage from './pages/LoginPage'
@@ -18,12 +18,12 @@ function App() {
   }, [location.pathname])
 
   return (
-    <div className="flex min-h-screen flex-col selection:bg-indigo-500/30">
+    <div className="flex min-h-screen flex-col text-slate-800 selection:bg-blue-200">
       <Navbar />
-      <main className="mx-auto w-full max-w-6xl flex-grow px-4 py-12 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-6xl flex-grow px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/resume" element={<ResumePage />} />
+          <Route path="/" element={<HomePageResponsive />} />
+          <Route path="/resume" element={<ResumePageResponsive />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LoginPage />} />
