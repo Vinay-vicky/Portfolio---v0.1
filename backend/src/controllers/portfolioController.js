@@ -4,8 +4,18 @@ export const getPortfolioData = async (_req, res, next) => {
   try {
     const profileResult = await db.execute("SELECT * FROM profile LIMIT 1");
     const experienceResult = await db.execute("SELECT * FROM experiences ORDER BY start_date DESC");
-    const educationResult = await db.execute("SELECT * FROM education ORDER BY id DESC");
-    const skillsResult = await db.execute("SELECT * FROM skills ORDER BY category, sort_order");
+    const educationResult = await db.execute("SELECT * FROM education ORDER BY id ASC");
+    const skillsResult = await db.execute(`
+      SELECT *
+      FROM skills
+      ORDER BY
+        CASE
+          WHEN category = 'Professional Skills' THEN 1
+          WHEN category = 'Languages' THEN 2
+          ELSE 3
+        END,
+        sort_order ASC
+    `);
     const projectResult = await db.execute("SELECT * FROM projects ORDER BY sort_order ASC, id ASC");
 
     res.json({

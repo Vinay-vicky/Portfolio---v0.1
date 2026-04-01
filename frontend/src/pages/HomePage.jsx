@@ -49,6 +49,7 @@ function HomePage() {
             "{profile?.quote}"
           </p>
           <h1 className="hero-title section-title text-gradient mt-6">
+            <span className="block text-4xl mb-2 text-white">Hi, I'm {profile?.full_name}</span>
             {profile?.tagline || 'Crafting Innovative Digital Experiences'}
           </h1>
           <p className="hero-bio mt-6 max-w-2xl text-lg text-slate-300 leading-relaxed">

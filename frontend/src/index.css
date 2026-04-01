@@ -11,33 +11,25 @@ body,
 body {
   margin: 0;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  background-color: #090a0f;
-  background-image: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.12), transparent 25%),
-                    radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.12), transparent 25%);
-  background-attachment: fixed;
-  color: #f1f5f9; /* slate-100 */
+  background: #f8fafc;
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #818cf8 0%, #d8b4fe 100%);
+  background: linear-gradient(135deg, #1e30f3 0%, #e21e80 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .bg-gradient-primary-to-secondary {
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #1e30f3 0%, #e21e80 100%);
 }
 
 @layer components {
   .section-title {
-    @apply text-3xl font-black md:text-5xl tracking-tight;
+    @apply text-3xl font-black;
   }
 
   .glass-card {
-    @apply rounded-3xl border border-white/10 bg-darkCard/80 p-6 shadow-2xl backdrop-blur-xl transition hover:border-white/20;
-  }
-  
-  .glass-nav {
-    @apply border-b border-white/5 bg-darkBg/70 backdrop-blur-lg;
+    @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm;
   }
 }

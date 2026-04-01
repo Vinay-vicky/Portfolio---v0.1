@@ -14,8 +14,9 @@ function ResumePage() {
 
   useGSAP(() => {
     if (loading || (!experiences.length && !education.length)) return;
-
-    gsap.from(".page-header", { y: -30, opacity: 0, duration: 0.8, ease: "power3.out" })
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
+    tl.from(".page-header", { y: -30, opacity: 0, duration: 0.8 })
+      .from(".resume-intro", { y: 20, opacity: 0, duration: 0.6 }, "-=0.4")
 
     const sections = gsap.utils.toArray('.resume-section')
     sections.forEach((section) => {
@@ -103,6 +104,15 @@ function ResumePage() {
           </a>
         ) : null}
       </div>
+
+      {profile?.about_text && (
+        <div className="resume-intro glass-card !p-6 md:!p-8">
+          <h2 className="text-xl font-bold text-white mb-4 lg:mb-6">Professional Summary</h2>
+          <p className="text-slate-300 leading-relaxed whitespace-pre-line text-sm md:text-base">
+            {profile.about_text}
+          </p>
+        </div>
+      )}
 
       <div className="grid gap-16 lg:grid-cols-2">
         {/* Experience Section */}

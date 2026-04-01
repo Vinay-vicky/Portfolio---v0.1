@@ -5,6 +5,9 @@ import HomePage from './pages/HomePage'
 import ResumePage from './pages/ResumePage'
 import ProjectsPage from './pages/ProjectsPage'
 import ContactPage from './pages/ContactPage'
+import LoginPage from './pages/LoginPage'
+import AdminDashboard from './pages/AdminDashboard'
+import ProtectedRoute from './components/ProtectedRoute'
 import Footer from './components/Footer'
 
 function App() {
@@ -23,6 +26,15 @@ function App() {
           <Route path="/resume" element={<ResumePage />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route 
+            path="/admin/*" 
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
       </main>
       <Footer />

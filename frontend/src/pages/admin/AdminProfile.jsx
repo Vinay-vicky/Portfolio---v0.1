@@ -1,0 +1,136 @@
+import { useState, useEffect } from 'react'
+import { api } from '../../features/portfolio/portfolioApi'
+import { Save } from 'lucide-react'
+
+function AdminProfile({ profile, onUpdated }) {
+  const [formData, setFormData] = useState({})
+  const [saving, setSaving] = useState(false)
+  const [message, setMessage] = useState(null)
+
+  useEffect(() => {
+    if (profile) setFormData(profile)
+  }, [profile])
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setSaving(true)
+    setMessage(null)
+    
+    try {
+      await api.put('/portfolio/profile', formData)
+      setMessage({ type: 'success', text: 'Profile updated successfully!' })
+      if (onUpdated) onUpdated()
+    } catch (err) {
+      setMessage({ type: 'error', text: err.response?.data?.error || 'Failed to update profile' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const fields = [
+    { name: 'full_name', label: 'Full Name', type: 'text' },
+    { name: 'role', label: 'Role/Title', type: 'text' },
+    { name: 'tagline', label: 'Tagline', type: 'text' },
+    { name: 'quote', label: 'Quote', type: 'text' },
+    { name: 'email', label: 'Email Address', type: 'email' },
+    { name: 'phone', label: 'Phone Number', type: 'text' },
+    { name: 'location', label: 'Location', type: 'text' },
+    { name: 'github_url', label: 'GitHub URL', type: 'url' },
+    { name: 'linkedin_url', label: 'LinkedIn URL', type: 'url' },
+    { name: 'whatsapp_url', label: 'WhatsApp URL', type: 'url' },
+    { name: 'instagram_url', label: 'Instagram URL', type: 'url' },
+    { name: 'facebook_url', label: 'Facebook URL', type: 'url' },
+    { name: 'profile_image_url', label: 'Profile Image URL', type: 'text' },
+    { name: 'resume_pdf_url', label: 'Resume PDF URL', type: 'text' },
+  ]
+
+  return (
+    <div className="p-6">
+      <h2 className="text-2xl font-bold text-white mb-6 pb-4 border-b border-white/10">Profile Settings</h2>
+      
+      {message && (
+        <div className={`mb-6 p-4 rounded-lg border ${message.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+          {message.text}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {fields.map(field => (
+            <div key={field.name} className="space-y-2">
+              <label htmlFor={field.name} className="text-sm font-medium text-slate-300">
+                {field.label}
+              </label>
+              <input
+                id={field.name}
+                name={field.name}
+                type={field.type}
+                value={formData[field.name] || ''}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-white/10 bg-slate-900/50 p-2.5 text-white placeholder-slate-500 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="about_intro" className="text-sm font-medium text-slate-300">About Intro (Greeting)</label>
+          <textarea
+            id="about_intro"
+            name="about_intro"
+            rows={2}
+            value={formData.about_intro || ''}
+            onChange={handleChange}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/50 p-3 text-white placeholder-slate-500 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="bio" className="text-sm font-medium text-slate-300">Short Bio</label>
+          <textarea
+            id="bio"
+            name="bio"
+            rows={3}
+            value={formData.bio || ''}
+            onChange={handleChange}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/50 p-3 text-white placeholder-slate-500 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="about_text" className="text-sm font-medium text-slate-300">Detailed About Text (Home & Resume Page)</label>
+          <textarea
+            id="about_text"
+            name="about_text"
+            rows={5}
+            value={formData.about_text || ''}
+            onChange={handleChange}
+            className="w-full rounded-xl border border-white/10 bg-slate-900/50 p-3 text-white placeholder-slate-500 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+          />
+        </div>
+
+        <div className="pt-4 flex justify-end">
+          <button
+            type="submit"
+            disabled={saving}
+            className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 font-semibold text-white shadow-lg transition-colors hover:bg-indigo-500 disabled:opacity-70 disabled:pointer-events-none"
+          >
+            {saving ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+            ) : (
+              <Save size={18} />
+            )}
+            Save Profile
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+export default AdminProfile
