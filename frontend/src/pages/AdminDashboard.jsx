@@ -1,25 +1,137 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { logout } from '../features/auth/authSlice'
 import usePortfolioData from '../features/portfolio/usePortfolioData'
+import { runSmtpHealthCheck } from '../features/portfolio/portfolioApi'
 import AdminProfile from './admin/AdminProfile'
 import AdminExperiences from './admin/AdminExperiences'
 import AdminEducation from './admin/AdminEducation'
 import AdminSkills from './admin/AdminSkills'
 import AdminProjects from './admin/AdminProjects'
-import { LogOut, LayoutDashboard, User, Briefcase, GraduationCap, Code2, FolderGit2 } from 'lucide-react'
+import { LogOut, LayoutDashboard, User, Briefcase, GraduationCap, Code2, FolderGit2, MailCheck } from 'lucide-react'
 
 function AdminDashboard() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { profile, loading, error, refreshData } = usePortfolioData()
   const [activeTab, setActiveTab] = useState('profile')
+  const [smtpStatus, setSmtpStatus] = useState({
+    type: 'idle',
+    message: '',
+    details: '',
+  })
+  const [smtpReadiness, setSmtpReadiness] = useState({
+    type: 'checking',
+    label: 'Checking...',
+    details: '',
+  })
+
+  const checkSmtpReadiness = async (options = {}) => {
+    const { silent = false } = options
+
+    if (!silent) {
+      setSmtpReadiness({
+        type: 'checking',
+        label: 'Checking...',
+        details: '',
+      })
+    }
+
+    try {
+      const response = await runSmtpHealthCheck({ sendTestEmail: false })
+      const host = response?.connection?.host
+      const port = response?.connection?.port
+
+      setSmtpReadiness({
+        type: 'ready',
+        label: 'Ready',
+        details: host && port ? `${host}:${port}` : 'SMTP connection verified',
+      })
+    } catch (err) {
+      const responseData = err.response?.data
+      const missingKeys = Array.isArray(responseData?.missingKeys) ? responseData.missingKeys : []
+
+      setSmtpReadiness({
+        type: 'warning',
+        label: missingKeys.length > 0 ? 'Needs setup' : 'Issue detected',
+        details:
+          missingKeys.length > 0
+            ? `Missing: ${missingKeys.join(', ')}`
+            : responseData?.reason || responseData?.error || 'SMTP verification failed',
+      })
+    }
+  }
+
+  useEffect(() => {
+    checkSmtpReadiness({ silent: true })
+  }, [])
 
   const handleLogout = () => {
     dispatch(logout())
     navigate('/login')
   }
+
+  const handleSmtpTest = async () => {
+    setSmtpStatus({
+      type: 'loading',
+      message: 'Checking SMTP connection and sending a probe email...',
+      details: '',
+    })
+    setSmtpReadiness({
+      type: 'checking',
+      label: 'Checking...',
+      details: '',
+    })
+
+    try {
+      const response = await runSmtpHealthCheck({ sendTestEmail: true })
+      setSmtpStatus({
+        type: 'success',
+        message: response.message || 'SMTP test completed successfully.',
+        details: response.probe?.messageId ? `Message ID: ${response.probe.messageId}` : '',
+      })
+      setSmtpReadiness({
+        type: 'ready',
+        label: 'Ready',
+        details: response.connection?.host && response.connection?.port
+          ? `${response.connection.host}:${response.connection.port}`
+          : 'SMTP connection verified',
+      })
+    } catch (err) {
+      const responseData = err.response?.data
+      const missingKeys = Array.isArray(responseData?.missingKeys) ? responseData.missingKeys : []
+
+      setSmtpStatus({
+        type: 'error',
+        message: responseData?.reason || responseData?.error || 'SMTP test failed.',
+        details: missingKeys.length > 0 ? `Missing: ${missingKeys.join(', ')}` : '',
+      })
+
+      setSmtpReadiness({
+        type: 'warning',
+        label: missingKeys.length > 0 ? 'Needs setup' : 'Issue detected',
+        details:
+          missingKeys.length > 0
+            ? `Missing: ${missingKeys.join(', ')}`
+            : responseData?.reason || responseData?.error || 'SMTP verification failed',
+      })
+    }
+  }
+
+  const smtpReadinessStyles =
+    smtpReadiness.type === 'ready'
+      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+      : smtpReadiness.type === 'warning'
+        ? 'border-amber-200 bg-amber-50 text-amber-700'
+        : 'border-blue-200 bg-blue-50 text-blue-700'
+
+  const smtpReadinessDotStyles =
+    smtpReadiness.type === 'ready'
+      ? 'bg-emerald-500'
+      : smtpReadiness.type === 'warning'
+        ? 'bg-amber-500'
+        : 'bg-blue-500'
 
   const tabs = [
     { id: 'profile', label: 'Profile Settings', icon: User },
@@ -58,6 +170,19 @@ function AdminDashboard() {
             <h2 className="text-lg font-black text-slate-900">Admin CMS</h2>
           </div>
 
+          <div className={`mb-4 rounded-lg border px-3 py-2.5 ${smtpReadinessStyles}`}>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-wide">SMTP status</span>
+              <span className="inline-flex items-center gap-1 text-xs font-semibold">
+                <span className={`h-2 w-2 rounded-full ${smtpReadinessDotStyles}`} />
+                {smtpReadiness.label}
+              </span>
+            </div>
+            {smtpReadiness.details ? (
+              <p className="mt-2 break-words text-[11px] font-medium opacity-90">{smtpReadiness.details}</p>
+            ) : null}
+          </div>
+
           <nav className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:flex lg:flex-col">
             {tabs.map((tab) => {
               const Icon = tab.icon
@@ -80,6 +205,36 @@ function AdminDashboard() {
           </nav>
 
           <div className="mt-4 border-t border-slate-200 pt-4">
+            <button
+              onClick={handleSmtpTest}
+              disabled={smtpStatus.type === 'loading'}
+              className="mb-3 w-full rounded-lg border border-blue-200 bg-blue-50 px-3 py-2.5 text-left text-sm font-semibold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              <span className="inline-flex items-center gap-2">
+                {smtpStatus.type === 'loading' ? (
+                  <span className="h-4 w-4 animate-spin rounded-full border-b-2 border-blue-700" />
+                ) : (
+                  <MailCheck size={16} />
+                )}
+                {smtpStatus.type === 'loading' ? 'Testing SMTP...' : 'Test SMTP delivery'}
+              </span>
+            </button>
+
+            {smtpStatus.type !== 'idle' ? (
+              <div
+                className={`mb-3 rounded-lg border px-3 py-2 text-xs ${
+                  smtpStatus.type === 'success'
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                    : smtpStatus.type === 'error'
+                      ? 'border-red-200 bg-red-50 text-red-700'
+                      : 'border-blue-200 bg-blue-50 text-blue-700'
+                }`}
+              >
+                <p>{smtpStatus.message}</p>
+                {smtpStatus.details ? <p className="mt-1 font-semibold">{smtpStatus.details}</p> : null}
+              </div>
+            ) : null}
+
             <button
               onClick={handleLogout}
               className="w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50"

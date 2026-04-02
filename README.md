@@ -26,6 +26,16 @@ For quick local development, you can use:
 - Backend DB URL: `file:./data/portfolio.db`
 - Frontend API URL: `http://localhost:5000/api`
 
+For contact email delivery to your inbox, configure SMTP in `backend/.env`:
+
+- `CONTACT_RECEIVER_EMAIL` (the mailbox where contact messages should arrive)
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE` (`true` for SSL ports like `465`, otherwise `false`)
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM` (optional display sender)
+
 ### Turso setup
 
 When you are ready to use Turso cloud, set in `backend/.env`:
@@ -86,6 +96,13 @@ Required environment variables in Render:
 - `ADMIN_USERNAME`
 - `ADMIN_PASSWORD`
 - `JWT_SECRET`
+- `CONTACT_RECEIVER_EMAIL`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM` (optional)
 
 How to apply it:
 
@@ -100,7 +117,8 @@ If you keep an existing Render service created manually, make sure its settings 
 
 - `GET /api/health` → health check
 - `GET /api/portfolio` → profile + experiences + projects
-- `POST /api/contact` → save contact message
+- `POST /api/contact` → save contact message to DB and send email notification
+- `POST /api/admin/smtp-test` → admin-only SMTP verification + optional probe email
 
 ## Next improvements you can add
 

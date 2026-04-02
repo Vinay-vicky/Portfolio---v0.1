@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { SendHorizontal } from 'lucide-react'
 import { sendContactMessage } from '../features/portfolio/portfolioSlice'
+import usePageReveal from '../hooks/usePageReveal'
 
 const initialForm = {
   name: '',
@@ -12,8 +14,13 @@ const initialForm = {
 
 function ContactPage() {
   const dispatch = useDispatch()
-  const { contactStatus, contactError } = useSelector((state) => state.portfolio)
+  const { contactStatus, contactError, contactSuccessMessage } = useSelector((state) => state.portfolio)
   const [form, setForm] = useState(initialForm)
+  const sectionRef = usePageReveal()
+
+  const isPartialDelivery =
+    contactStatus === 'succeeded' &&
+    contactSuccessMessage?.toLowerCase().includes('could not be delivered')
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -31,16 +38,16 @@ function ContactPage() {
   }
 
   return (
-    <section className="mx-auto max-w-3xl glass-card">
-      <div className="text-center">
+    <section ref={sectionRef} className="mx-auto max-w-3xl space-y-5">
+      <div className="glass-card text-center" data-animate-intro>
         <div className="bg-gradient-primary-to-secondary mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full text-lg text-white shadow-md shadow-blue-200">
-          ✉
+          <SendHorizontal size={18} />
         </div>
         <h1 className="section-title text-slate-900">Get in touch</h1>
-        <p className="mt-2 text-sm text-slate-600 sm:text-base">Let&apos;s work together!</p>
+        <p className="mt-2 text-sm text-slate-600 sm:text-base">Let&apos;s work together! Every message is saved to the database and sent to your configured inbox.</p>
       </div>
 
-      <form className="mt-6 space-y-4" onSubmit={handleSubmit} aria-busy={contactStatus === 'loading'}>
+      <form className="glass-card space-y-4" onSubmit={handleSubmit} aria-busy={contactStatus === 'loading'} data-animate-reveal>
         <div className="grid gap-4 sm:grid-cols-2">
           <input className="soft-input" name="name" value={form.name} onChange={handleChange} placeholder="Full name" required />
           <input className="soft-input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="Email" required />
@@ -56,13 +63,18 @@ function ContactPage() {
         <button
           type="submit"
           disabled={contactStatus === 'loading'}
-          className="btn-primary w-full sm:w-auto disabled:cursor-not-allowed disabled:bg-blue-300 disabled:opacity-70"
+          className="btn-primary w-full gap-2 sm:w-auto disabled:cursor-not-allowed disabled:bg-blue-300 disabled:opacity-70"
         >
+          <SendHorizontal size={15} />
           {contactStatus === 'loading' ? 'Sending...' : 'Send message'}
         </button>
 
         <div aria-live="polite" aria-atomic="true">
-          {contactStatus === 'succeeded' ? <p className="text-emerald-600">Message sent successfully.</p> : null}
+          {contactStatus === 'succeeded' ? (
+            <p className={isPartialDelivery ? 'text-amber-600' : 'text-emerald-600'}>
+              {contactSuccessMessage || 'Message sent successfully.'}
+            </p>
+          ) : null}
           {contactStatus === 'failed' ? <p className="text-red-600">{contactError}</p> : null}
         </div>
       </form>

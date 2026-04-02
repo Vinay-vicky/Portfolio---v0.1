@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import portfolioRoutes from "./routes/portfolioRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import { initSchema } from "./db/schema.js";
 
 dotenv.config();
@@ -49,6 +50,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use((error, _req, res, _next) => {
   console.error(error);

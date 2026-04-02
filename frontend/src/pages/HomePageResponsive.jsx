@@ -3,6 +3,7 @@ import { getAssetUrl } from '../features/portfolio/portfolioApi'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Download, MessageCircle } from 'lucide-react'
 import { FaFacebook, FaGithub, FaInstagram, FaLinkedin } from 'react-icons/fa'
+import usePageReveal from '../hooks/usePageReveal'
 
 const socialConfig = [
   {
@@ -39,6 +40,7 @@ const socialConfig = [
 
 function HomePageResponsive() {
   const { profile, loading, error } = usePortfolioData()
+  const sectionRef = usePageReveal()
 
   if (loading && !profile) {
     return (
@@ -53,20 +55,20 @@ function HomePageResponsive() {
   }
 
   return (
-    <section className="space-y-10 pb-6 sm:space-y-14">
-      <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+    <section ref={sectionRef} className="space-y-10 pb-6 sm:space-y-14">
+      <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center" data-animate-intro>
         <div className="order-2 lg:order-1">
-          <p className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-blue-700">
+          <p className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-blue-700" data-animate-intro>
             {profile?.role || 'Full Stack Developer'}
           </p>
-          <p className="mt-4 border-l-4 border-blue-400 pl-4 text-base italic text-slate-600 sm:text-lg">&quot;{profile?.quote}&quot;</p>
-          <h1 className="mt-5 text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">
+          <p className="mt-4 border-l-4 border-blue-400 pl-4 text-base italic text-slate-600 sm:text-lg" data-animate-intro>&quot;{profile?.quote}&quot;</p>
+          <h1 className="mt-5 text-3xl font-black leading-tight sm:text-4xl lg:text-5xl" data-animate-intro>
             <span className="mb-2 block text-slate-900">Hi, I&apos;m {profile?.full_name}</span>
             <span className="text-gradient">{profile?.tagline || 'Crafting Innovative Digital Experiences'}</span>
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">{profile?.bio}</p>
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg" data-animate-intro>{profile?.bio}</p>
 
-          <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
+          <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap" data-animate-intro>
             <Link to="/resume" className="btn-primary w-full gap-2 sm:w-auto">
               Resume
               <ArrowRight size={16} />
@@ -86,8 +88,8 @@ function HomePageResponsive() {
           </div>
         </div>
 
-        <div className="order-1 mx-auto w-full max-w-md lg:order-2">
-          <div className="relative overflow-hidden rounded-3xl border border-blue-100 bg-white p-3 shadow-xl shadow-blue-100/80 sm:p-4">
+        <div className="order-1 mx-auto w-full max-w-md lg:order-2" data-animate-intro>
+          <div className="relative overflow-hidden rounded-3xl border border-blue-100 bg-white p-3 shadow-xl shadow-blue-100/80 sm:p-4" data-animate-float>
             <div className="pointer-events-none absolute inset-x-3 top-0 h-24 rounded-b-full bg-gradient-to-r from-blue-200/40 to-cyan-200/40 blur-2xl" />
             {profile?.profile_image_url ? (
               <img
@@ -100,26 +102,26 @@ function HomePageResponsive() {
         </div>
       </div>
 
-      <article className="glass-card">
+      <article className="glass-card" data-animate-reveal>
         <h2 className="text-gradient text-2xl font-black sm:text-3xl">{profile?.about_intro || 'About Me'}</h2>
         <div className="mt-4 space-y-3 whitespace-pre-line text-sm leading-relaxed text-slate-600 sm:text-base">
           {profile?.about_text}
         </div>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4" data-animate-reveal>
             <p className="text-xs uppercase tracking-wider text-slate-500">Name</p>
             <p className="mt-1 font-semibold text-slate-800">{profile?.full_name}</p>
           </div>
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4" data-animate-reveal>
             <p className="text-xs uppercase tracking-wider text-slate-500">Email</p>
             <p className="mt-1 truncate font-semibold text-slate-800" title={profile?.email}>{profile?.email}</p>
           </div>
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4" data-animate-reveal>
             <p className="text-xs uppercase tracking-wider text-slate-500">Phone</p>
             <p className="mt-1 font-semibold text-slate-800">{profile?.phone}</p>
           </div>
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4" data-animate-reveal>
             <p className="text-xs uppercase tracking-wider text-slate-500">Location</p>
             <p className="mt-1 font-semibold text-slate-800">{profile?.location}</p>
           </div>
@@ -133,6 +135,7 @@ function HomePageResponsive() {
             return (
               <a
                 key={key}
+                data-animate-reveal
                 className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition sm:text-sm ${className}`}
                 href={url}
                 target="_blank"

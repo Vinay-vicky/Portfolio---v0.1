@@ -5,9 +5,16 @@ export const loadPortfolio = createAsyncThunk('portfolio/loadPortfolio', async (
   return fetchPortfolio()
 })
 
-export const sendContactMessage = createAsyncThunk('portfolio/sendContactMessage', async (payload) => {
-  return submitContactForm(payload)
-})
+export const sendContactMessage = createAsyncThunk(
+  'portfolio/sendContactMessage',
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await submitContactForm(payload)
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || error.message || 'Could not send message.')
+    }
+  },
+)
 
 const initialState = {
   profile: null,
@@ -19,6 +26,7 @@ const initialState = {
   error: null,
   contactStatus: 'idle',
   contactError: null,
+  contactSuccessMessage: null,
 }
 
 const portfolioSlice = createSlice({
@@ -46,13 +54,15 @@ const portfolioSlice = createSlice({
       .addCase(sendContactMessage.pending, (state) => {
         state.contactStatus = 'loading'
         state.contactError = null
+        state.contactSuccessMessage = null
       })
-      .addCase(sendContactMessage.fulfilled, (state) => {
+      .addCase(sendContactMessage.fulfilled, (state, action) => {
         state.contactStatus = 'succeeded'
+        state.contactSuccessMessage = action.payload?.message || 'Message sent successfully.'
       })
       .addCase(sendContactMessage.rejected, (state, action) => {
         state.contactStatus = 'failed'
-        state.contactError = action.error.message || 'Could not send message.'
+        state.contactError = action.payload || action.error.message || 'Could not send message.'
       })
   },
 })

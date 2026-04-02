@@ -30,6 +30,11 @@ export const loginAdmin = async (credentials) => {
   return data
 }
 
+export const runSmtpHealthCheck = async (payload = { sendTestEmail: true }) => {
+  const { data } = await api.post('/admin/smtp-test', payload)
+  return data
+}
+
 export const getAssetUrl = (path) => {
   if (!path) return ''
   if (path.startsWith('http://') || path.startsWith('https://')) return path

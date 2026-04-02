@@ -1,9 +1,11 @@
 import usePortfolioData from '../features/portfolio/usePortfolioData'
 import { getAssetUrl } from '../features/portfolio/portfolioApi'
 import { Link } from 'react-router-dom'
+import usePageReveal from '../hooks/usePageReveal'
 
 function ProjectsPage() {
   const { projects, loading, error } = usePortfolioData()
+  const sectionRef = usePageReveal()
 
   if (loading && projects.length === 0) {
     return (
@@ -18,8 +20,8 @@ function ProjectsPage() {
   }
 
   return (
-    <section className="space-y-10 sm:space-y-12">
-      <div className="space-y-2 text-center">
+    <section ref={sectionRef} className="space-y-10 sm:space-y-12">
+      <div className="space-y-2 text-center" data-animate-intro>
         <h1 className="section-title text-gradient">Projects</h1>
         <p className="mx-auto max-w-2xl text-sm text-slate-600 sm:text-base">
           A collection of my recent work across web development, machine learning, and product interfaces.
@@ -28,7 +30,7 @@ function ProjectsPage() {
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {projects.map((project) => (
-          <article key={project.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-200/80 transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-100/70">
+          <article key={project.id} data-animate-reveal className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-200/80 transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-100/70">
             {project.image_url ? (
               <img
                 src={getAssetUrl(project.image_url)}
@@ -55,13 +57,13 @@ function ProjectsPage() {
         ))}
 
         {projects.length === 0 ? (
-          <article className="glass-card sm:col-span-2 xl:col-span-3">
+          <article className="glass-card sm:col-span-2 xl:col-span-3" data-animate-reveal>
             <p className="text-sm text-slate-600 sm:text-base">No projects available right now. Please check back soon.</p>
           </article>
         ) : null}
       </div>
 
-      <div className="rounded-2xl bg-gradient-primary-to-secondary px-5 py-8 text-center text-white shadow-lg shadow-cyan-200 sm:px-8 sm:py-10">
+      <div className="rounded-2xl bg-gradient-primary-to-secondary px-5 py-8 text-center text-white shadow-lg shadow-cyan-200 sm:px-8 sm:py-10" data-animate-reveal>
         <h2 className="text-2xl font-black sm:text-3xl">Let&apos;s build something together</h2>
         <Link
           to="/contact"
