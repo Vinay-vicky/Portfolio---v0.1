@@ -1,71 +1,9 @@
-import usePortfolioData from '../features/portfolio/usePortfolioData'
+simport usePortfolioData from '../features/portfolio/usePortfolioData'
 import { getAssetUrl } from '../features/portfolio/portfolioApi'
-import { useRef } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
-import { Download, Briefcase, GraduationCap, Code2 } from 'lucide-react'
-
-gsap.registerPlugin(ScrollTrigger)
+import { Briefcase, Download, GraduationCap, Sparkles } from 'lucide-react'
 
 function ResumePage() {
   const { profile, experiences, education, skills, loading, error } = usePortfolioData()
-  const container = useRef()
-
-  useGSAP(() => {
-    if (loading || (!experiences.length && !education.length)) return;
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
-    tl.from(".page-header", { y: -30, opacity: 0, duration: 0.8 })
-      .from(".resume-intro", { y: 20, opacity: 0, duration: 0.6 }, "-=0.4")
-
-    const sections = gsap.utils.toArray('.resume-section')
-    sections.forEach((section) => {
-      gsap.from(section, {
-        scrollTrigger: {
-          trigger: section,
-          start: "top bottom-=100px",
-          toggleActions: "play none none reverse"
-        },
-        y: 40,
-        opacity: 0,
-        duration: 0.8,
-        ease: "power2.out"
-      })
-    })
-
-    const items = gsap.utils.toArray('.timeline-item')
-    items.forEach((item, i) => {
-      gsap.from(item, {
-        scrollTrigger: {
-          trigger: item,
-          start: "top bottom-=50px",
-          toggleActions: "play none none reverse"
-        },
-        x: -30,
-        opacity: 0,
-        duration: 0.5,
-        ease: "power2.out",
-        delay: i * 0.1
-      })
-    })
-
-    const skillCards = gsap.utils.toArray('.skill-card')
-    skillCards.forEach((card, i) => {
-      gsap.from(card, {
-        scrollTrigger: {
-          trigger: card,
-          start: "top bottom-=50px",
-          toggleActions: "play none none reverse"
-        },
-        scale: 0.9,
-        opacity: 0,
-        duration: 0.5,
-        ease: "back.out(1.5)",
-        delay: i * 0.1
-      })
-    })
-
-  }, { scope: container, dependencies: [loading, experiences, education] })
 
   const groupedSkills = skills.reduce((acc, skill) => {
     if (!acc[skill.category]) acc[skill.category] = []
@@ -76,131 +14,110 @@ function ResumePage() {
   if (loading && experiences.length === 0 && education.length === 0) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-indigo-500"></div>
+        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-500" />
       </div>
     )
   }
 
   if (error && experiences.length === 0 && education.length === 0) {
-    return <p className="text-red-400">{error}</p>
+    return <p className="text-red-600">{error}</p>
   }
 
   return (
-    <section ref={container} className="space-y-16 pb-10">
-      <div className="page-header flex flex-wrap items-center justify-between gap-6 border-b border-white/10 pb-8">
-        <div>
-          <h1 className="section-title text-gradient">Resume & Experience</h1>
-          <p className="mt-2 text-slate-400 max-w-xl">A detailed look at my professional journey, academic background, and technical skillset.</p>
+    <section className="space-y-10 sm:space-y-12">
+      <div className="glass-card flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="max-w-2xl">
+          <h1 className="section-title text-gradient">Resume</h1>
+          <p className="mt-2 text-sm text-slate-600 sm:text-base">
+            My professional experience, academic background, and core skills in one place.
+          </p>
         </div>
+
         {profile?.resume_pdf_url ? (
           <a
             href={getAssetUrl(profile.resume_pdf_url)}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-6 py-3 font-semibold text-indigo-300 transition-colors hover:bg-indigo-500 hover:text-white"
+            className="btn-primary w-full gap-2 sm:w-auto"
           >
-            <Download size={18} />
-            Download PDF
+            <Download size={16} />
+            Download Resume
           </a>
         ) : null}
       </div>
 
-      {profile?.about_text && (
-        <div className="resume-intro glass-card !p-6 md:!p-8">
-          <h2 className="text-xl font-bold text-white mb-4 lg:mb-6">Professional Summary</h2>
-          <p className="text-slate-300 leading-relaxed whitespace-pre-line text-sm md:text-base">
-            {profile.about_text}
-          </p>
-        </div>
-      )}
-
-      <div className="grid gap-16 lg:grid-cols-2">
-        {/* Experience Section */}
-        <div className="resume-section">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="rounded-lg bg-indigo-500/20 p-2 text-indigo-400 border border-indigo-500/30">
-              <Briefcase size={24} />
-            </div>
-            <h2 className="text-2xl font-black text-white">Experience</h2>
-          </div>
-          
-          <div className="relative border-l-2 border-slate-800 ml-4 space-y-10">
-            {experiences.map((item) => (
-              <article key={item.id} className="timeline-item relative pl-8 before:absolute before:left-[-9px] before:top-1 before:h-4 before:w-4 before:rounded-full before:border-4 before:border-darkBg before:bg-indigo-500">
-                <div className="glass-card !p-5 !rounded-2xl">
-                  <p className="inline-block rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-indigo-400">
-                    {item.period_label || `${item.start_date} - ${item.end_date || 'Present'}`}
-                  </p>
-                  <h3 className="mt-3 text-xl font-bold text-white">{item.position}</h3>
-                  <div className="mt-1 flex flex-wrap items-center gap-2 text-slate-400 text-sm">
-                    {item.company_url ? (
-                      <a href={item.company_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-300 hover:text-indigo-200 transition-colors">
-                        {item.company}
-                      </a>
-                    ) : (
-                      <span className="font-semibold text-indigo-300">{item.company}</span>
-                    )}
-                    <span>•</span>
-                    <span>{item.location}</span>
-                  </div>
-                  <p className="mt-4 text-slate-300 leading-relaxed text-sm whitespace-pre-line">{item.description}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+      <div className="space-y-5">
+        <div className="flex items-center gap-2">
+          <span className="rounded-lg bg-blue-100 p-2 text-blue-700">
+            <Briefcase size={18} />
+          </span>
+          <h2 className="text-2xl font-black text-slate-900">Experience</h2>
         </div>
 
-        {/* Education Section */}
-        <div className="resume-section">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="rounded-lg bg-purple-500/20 p-2 text-purple-400 border border-purple-500/30">
-              <GraduationCap size={24} />
-            </div>
-            <h2 className="text-2xl font-black text-white">Education</h2>
-          </div>
-          
-          <div className="relative border-l-2 border-slate-800 ml-4 space-y-10">
-            {education.map((item) => (
-              <article key={item.id} className="timeline-item relative pl-8 before:absolute before:left-[-9px] before:top-1 before:h-4 before:w-4 before:rounded-full before:border-4 before:border-darkBg before:bg-purple-500">
-                <div className="glass-card !p-5 !rounded-2xl">
-                  <p className="inline-block rounded-full bg-purple-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-purple-400">
-                    {item.years}
-                  </p>
-                  <h3 className="mt-3 text-xl font-bold text-white">{item.institution}</h3>
-                  <div className="mt-1 flex flex-wrap items-center gap-2 text-slate-400 text-sm">
-                    <span className="font-medium text-slate-300">{item.level}</span>
-                    <span>•</span>
-                    <span>{item.field}</span>
-                    <span>•</span>
-                    <span>{item.location}</span>
-                  </div>
-                  <p className="mt-4 text-slate-300 leading-relaxed text-sm whitespace-pre-line">{item.description}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+        <div className="space-y-4">
+          {experiences.map((item) => (
+            <article key={item.id} className="glass-card">
+              <p className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-700">
+                {item.period_label || `${item.start_date} - ${item.end_date || 'Present'}`}
+              </p>
+              <h3 className="mt-3 text-xl font-black text-slate-900">{item.position}</h3>
+              <p className="mt-1 text-sm text-slate-600 sm:text-base">
+                {item.company_url ? (
+                  <a href={item.company_url} target="_blank" rel="noreferrer" className="font-semibold text-blue-700 hover:text-blue-600">
+                    {item.company}
+                  </a>
+                ) : (
+                  <span className="font-semibold text-blue-700">{item.company}</span>
+                )}
+                {item.location ? <span> &middot; {item.location}</span> : null}
+              </p>
+              <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-600 sm:text-base">{item.description}</p>
+            </article>
+          ))}
         </div>
       </div>
 
-      <div className="resume-section pt-8 border-t border-white/10">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="rounded-lg bg-emerald-500/20 p-2 text-emerald-400 border border-emerald-500/30">
-            <Code2 size={24} />
-          </div>
-          <h2 className="text-2xl font-black text-white">Technical Skills</h2>
+      <div className="space-y-5">
+        <div className="flex items-center gap-2">
+          <span className="rounded-lg bg-violet-100 p-2 text-violet-700">
+            <GraduationCap size={18} />
+          </span>
+          <h2 className="text-2xl font-black text-slate-900">Education</h2>
         </div>
-        
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+        <div className="space-y-4">
+          {education.map((item) => (
+            <article key={item.id} className="glass-card">
+              <p className="inline-flex rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-violet-700">
+                {item.years}
+              </p>
+              <h3 className="mt-3 text-xl font-black text-slate-900">{item.institution}</h3>
+              <p className="mt-1 text-sm text-slate-600 sm:text-base">{item.level} &middot; {item.field} &middot; {item.location}</p>
+              <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-600 sm:text-base">{item.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-5">
+        <div className="flex items-center gap-2">
+          <span className="rounded-lg bg-cyan-100 p-2 text-cyan-700">
+            <Sparkles size={18} />
+          </span>
+          <h2 className="text-2xl font-black text-slate-900">Skills</h2>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {Object.entries(groupedSkills).map(([category, entries]) => (
-            <article key={category} className="skill-card glass-card !p-6">
-              <h3 className="text-lg font-bold text-indigo-300 mb-4 pb-2 border-b border-white/10">{category}</h3>
-              <div className="flex flex-wrap gap-2">
+            <article key={category} className="glass-card">
+              <h3 className="text-lg font-black text-blue-700">{category}</h3>
+              <ul className="mt-3 flex flex-wrap gap-2">
                 {entries.map((entry) => (
-                  <span key={entry.id} className="rounded-md bg-slate-800/80 px-3 py-1.5 text-sm text-slate-300 border border-white/5 transition-colors hover:border-indigo-500/30 hover:bg-slate-800">
+                  <li key={entry.id} className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 sm:text-sm">
                     {entry.name}
-                  </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </article>
           ))}
         </div>
