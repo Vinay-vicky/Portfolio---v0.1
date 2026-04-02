@@ -14,10 +14,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const normalizeOrigin = (origin) => origin?.trim().replace(/\/$/, "");
-const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:5173")
+const configuredOrigins = (process.env.FRONTEND_URL || "")
   .split(",")
   .map(normalizeOrigin)
   .filter(Boolean);
+const devOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
+const allowedOrigins = [
+  ...configuredOrigins,
+  ...(process.env.NODE_ENV === "production" ? [] : devOrigins),
+].filter((origin, index, collection) => origin && collection.indexOf(origin) === index);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const legacyAssetsPath = path.resolve(__dirname, "../../assets");

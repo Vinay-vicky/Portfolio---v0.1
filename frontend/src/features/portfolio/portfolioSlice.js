@@ -11,7 +11,13 @@ export const sendContactMessage = createAsyncThunk(
     try {
       return await submitContactForm(payload)
     } catch (error) {
-      return rejectWithValue(error.response?.data?.error || error.message || 'Could not send message.')
+      const isNetworkError = String(error?.message || '').toLowerCase().includes('network error')
+      return rejectWithValue(
+        error.response?.data?.error ||
+        (isNetworkError
+          ? 'Network Error: backend API unreachable. Start backend and check CORS/API URL configuration.'
+          : error.message || 'Could not send message.'),
+      )
     }
   },
 )

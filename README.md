@@ -90,7 +90,7 @@ Configured defaults in `render.yaml`:
 
 Required environment variables in Render:
 
-- `FRONTEND_URL` (your Vercel site URL, no trailing slash)
+- `FRONTEND_URL` (comma-separated allowed origins, no trailing slash; e.g. `https://your-site.vercel.app` in prod and `http://localhost:5173,http://127.0.0.1:5173` in local)
 - `TURSO_DATABASE_URL`
 - `TURSO_AUTH_TOKEN`
 - `ADMIN_USERNAME`
