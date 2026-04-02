@@ -36,7 +36,7 @@ function ProjectsPage() {
                 className="h-44 w-full object-cover sm:h-48"
               />
             ) : null}
-            <div className="p-5">
+            <div className="flex h-full flex-col p-5">
               <h2 className="text-lg font-black text-slate-900 sm:text-xl">{project.title}</h2>
               <p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">{project.description}</p>
               <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-blue-700 sm:text-sm">{project.tech_stack}</p>
@@ -45,7 +45,7 @@ function ProjectsPage() {
                   href={project.project_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-4 inline-flex items-center rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+                  className="mt-auto inline-flex items-center rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
                 >
                   Visit project &rarr;
                 </a>

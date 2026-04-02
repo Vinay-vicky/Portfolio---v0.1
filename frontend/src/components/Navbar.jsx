@@ -31,7 +31,7 @@ function Navbar() {
   }, [menuOpen])
 
   const linkClasses = ({ isActive }) =>
-    `rounded-lg px-3 py-2 text-sm font-semibold transition ${
+    `rounded-lg px-3 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-blue-200 ${
       isActive
         ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
         : 'text-slate-700 hover:bg-blue-50 hover:text-blue-700'
@@ -44,7 +44,7 @@ function Navbar() {
           <NavLink
             to="/"
             onClick={() => setMenuOpen(false)}
-            className="truncate text-sm font-black tracking-[0.14em] text-blue-700 sm:text-base"
+            className="truncate text-xs font-black tracking-[0.16em] text-blue-700 sm:text-sm md:text-base"
           >
             VIGNESH R V
           </NavLink>
@@ -60,7 +60,7 @@ function Navbar() {
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
 
-          <ul className="hidden items-center gap-2 md:flex md:gap-3">
+          <ul className="hidden items-center gap-2 rounded-xl border border-slate-200/80 bg-white/90 p-1 md:flex md:gap-3">
             {links.map((link) => (
               <li key={link.to}>
                 <NavLink to={link.to} className={linkClasses}>
@@ -72,7 +72,7 @@ function Navbar() {
         </div>
 
         {menuOpen ? (
-          <ul id="mobile-nav" className="mt-3 grid gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-lg md:hidden">
+          <ul id="mobile-nav" className="mt-3 grid max-h-[70vh] gap-2 overflow-auto rounded-xl border border-slate-200 bg-white p-2 shadow-lg md:hidden">
             {links.map((link) => (
               <li key={link.to}>
                 <NavLink

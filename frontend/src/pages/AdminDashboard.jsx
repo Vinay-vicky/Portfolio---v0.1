@@ -58,7 +58,7 @@ function AdminDashboard() {
             <h2 className="text-lg font-black text-slate-900">Admin CMS</h2>
           </div>
 
-          <nav className="flex flex-col gap-1">
+          <nav className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:flex lg:flex-col">
             {tabs.map((tab) => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
@@ -66,7 +66,7 @@ function AdminDashboard() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors sm:text-sm ${
                     isActive
                       ? 'border border-blue-200 bg-blue-50 text-blue-700'
                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
