@@ -43,7 +43,7 @@ function AdminDashboard() {
   if (loading && !profile) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-indigo-500"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-500"></div>
       </div>
     )
   }
@@ -52,7 +52,7 @@ function AdminDashboard() {
     <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
       {/* Sidebar */}
       <aside className="w-full space-y-4">
-        <div className="glass-card sticky top-24 !p-4 sm:!p-5">
+        <div className="glass-card !p-4 sm:!p-5 lg:sticky lg:top-24">
           <div className="mb-4 flex items-center gap-3 border-b border-slate-200 pb-4">
             <LayoutDashboard className="text-blue-700" />
             <h2 className="text-lg font-black text-slate-900">Admin CMS</h2>
@@ -86,7 +86,7 @@ function AdminDashboard() {
             >
               <span className="inline-flex items-center gap-3">
                 <LogOut size={18} />
-              Sign Out
+                Sign Out
               </span>
             </button>
           </div>

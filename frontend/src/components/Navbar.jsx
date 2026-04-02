@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 
 const links = [
@@ -11,6 +11,24 @@ const links = [
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const location = useLocation()
+
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (!menuOpen) {
+      document.body.style.overflow = ''
+      return
+    }
+
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [menuOpen])
 
   const linkClasses = ({ isActive }) =>
     `rounded-lg px-3 py-2 text-sm font-semibold transition ${
@@ -20,7 +38,7 @@ function Navbar() {
     }`
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/90 bg-white/85 backdrop-blur-lg">
+    <header className="sticky top-0 z-30 border-b border-slate-200/90 bg-white/85 shadow-sm shadow-slate-200/60 backdrop-blur-lg">
       <nav className="mx-auto w-full max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-3">
           <NavLink
@@ -37,6 +55,7 @@ function Navbar() {
             onClick={() => setMenuOpen((prev) => !prev)}
             aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -53,12 +72,11 @@ function Navbar() {
         </div>
 
         {menuOpen ? (
-          <ul className="mt-3 grid gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-lg md:hidden">
+          <ul id="mobile-nav" className="mt-3 grid gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-lg md:hidden">
             {links.map((link) => (
               <li key={link.to}>
                 <NavLink
                   to={link.to}
-                  onClick={() => setMenuOpen(false)}
                   className={linkClasses}
                 >
                   {link.label}

@@ -46,6 +46,15 @@ function ResumePageResponsive() {
         ) : null}
       </div>
 
+      {profile?.about_text ? (
+        <article className="glass-card">
+          <h2 className="text-xl font-black text-slate-900 sm:text-2xl">Professional Summary</h2>
+          <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-600 sm:text-base">
+            {profile.about_text}
+          </p>
+        </article>
+      ) : null}
+
       <div className="space-y-5">
         <div className="flex items-center gap-2">
           <span className="rounded-lg bg-blue-100 p-2 text-blue-700">

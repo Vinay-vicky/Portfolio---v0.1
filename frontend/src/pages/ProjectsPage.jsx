@@ -1,5 +1,6 @@
 import usePortfolioData from '../features/portfolio/usePortfolioData'
 import { getAssetUrl } from '../features/portfolio/portfolioApi'
+import { Link } from 'react-router-dom'
 
 function ProjectsPage() {
   const { projects, loading, error } = usePortfolioData()
@@ -52,16 +53,22 @@ function ProjectsPage() {
             </div>
           </article>
         ))}
+
+        {projects.length === 0 ? (
+          <article className="glass-card sm:col-span-2 xl:col-span-3">
+            <p className="text-sm text-slate-600 sm:text-base">No projects available right now. Please check back soon.</p>
+          </article>
+        ) : null}
       </div>
 
       <div className="rounded-2xl bg-gradient-primary-to-secondary px-5 py-8 text-center text-white shadow-lg shadow-cyan-200 sm:px-8 sm:py-10">
         <h2 className="text-2xl font-black sm:text-3xl">Let&apos;s build something together</h2>
-        <a
-          href="/contact"
+        <Link
+          to="/contact"
           className="mt-5 inline-flex rounded-md border border-white px-5 py-2 text-sm font-semibold text-white transition hover:bg-white hover:text-slate-900"
         >
           Contact me
-        </a>
+        </Link>
       </div>
     </section>
   )

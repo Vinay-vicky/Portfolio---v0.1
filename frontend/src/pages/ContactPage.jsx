@@ -40,7 +40,7 @@ function ContactPage() {
         <p className="mt-2 text-sm text-slate-600 sm:text-base">Let&apos;s work together!</p>
       </div>
 
-      <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+      <form className="mt-6 space-y-4" onSubmit={handleSubmit} aria-busy={contactStatus === 'loading'}>
         <div className="grid gap-4 sm:grid-cols-2">
           <input className="soft-input" name="name" value={form.name} onChange={handleChange} placeholder="Full name" required />
           <input className="soft-input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="Email" required />
@@ -56,13 +56,15 @@ function ContactPage() {
         <button
           type="submit"
           disabled={contactStatus === 'loading'}
-          className="btn-primary w-full sm:w-auto disabled:cursor-not-allowed disabled:bg-blue-300"
+          className="btn-primary w-full sm:w-auto disabled:cursor-not-allowed disabled:bg-blue-300 disabled:opacity-70"
         >
           {contactStatus === 'loading' ? 'Sending...' : 'Send message'}
         </button>
 
-        {contactStatus === 'succeeded' && <p className="text-emerald-600">Message sent successfully.</p>}
-        {contactStatus === 'failed' && <p className="text-red-600">{contactError}</p>}
+        <div aria-live="polite" aria-atomic="true">
+          {contactStatus === 'succeeded' ? <p className="text-emerald-600">Message sent successfully.</p> : null}
+          {contactStatus === 'failed' ? <p className="text-red-600">{contactError}</p> : null}
+        </div>
       </form>
     </section>
   )
