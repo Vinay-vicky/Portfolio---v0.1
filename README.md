@@ -57,6 +57,45 @@ Script:
 
 - `npm run dev`
 
+## Deployment
+
+- Frontend: Vercel (`frontend/`)
+- Backend: Render (`backend/`)
+- Database: Turso (libSQL)
+
+### Render backend auto-deploy (versioned)
+
+This repo now includes `render.yaml` at the root so backend deploy settings can live in git instead of only in the Render dashboard.
+
+Configured defaults in `render.yaml`:
+
+- Service type: `web`
+- Runtime: `node`
+- Branch: `master`
+- Root directory: `backend`
+- Build command: `npm ci`
+- Start command: `npm start`
+- Auto deploy: enabled
+- Health check: `/api/health`
+
+Required environment variables in Render:
+
+- `FRONTEND_URL` (your Vercel site URL, no trailing slash)
+- `TURSO_DATABASE_URL`
+- `TURSO_AUTH_TOKEN`
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD`
+- `JWT_SECRET`
+
+How to apply it:
+
+1. Push the repo changes to GitHub.
+2. In Render, create a new Blueprint instance from this repository (or recreate backend service using blueprint).
+3. Set all required env vars when prompted.
+4. Verify backend health at `/api/health`.
+
+If you keep an existing Render service created manually, make sure its settings still match `render.yaml` (`master` branch + `backend` rootDir + auto deploy ON).
+
 ## API endpoints
 
 - `GET /api/health` → health check
