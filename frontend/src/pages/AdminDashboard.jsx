@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { logout } from '../features/auth/authSlice'
 import usePortfolioData from '../features/portfolio/usePortfolioData'
-import { runSmtpHealthCheck } from '../features/portfolio/portfolioApi'
+import { fetchAdminMessages, runSmtpHealthCheck } from '../features/portfolio/portfolioApi'
 import AdminProfile from './admin/AdminProfile'
 import AdminExperiences from './admin/AdminExperiences'
 import AdminEducation from './admin/AdminEducation'
 import AdminSkills from './admin/AdminSkills'
 import AdminProjects from './admin/AdminProjects'
-import { LogOut, LayoutDashboard, User, Briefcase, GraduationCap, Code2, FolderGit2, MailCheck } from 'lucide-react'
+import AdminMessages from './admin/AdminMessages'
+import { LogOut, LayoutDashboard, User, Briefcase, GraduationCap, Code2, FolderGit2, MailCheck, Inbox, Bell, BellOff } from 'lucide-react'
 
 function AdminDashboard() {
   const dispatch = useDispatch()
@@ -26,6 +27,58 @@ function AdminDashboard() {
     label: 'Checking...',
     details: '',
   })
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0)
+  const [inboxSoundAlertsEnabled, setInboxSoundAlertsEnabled] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return window.localStorage.getItem('adminInboxSoundAlerts') === 'true'
+  })
+  const unreadMessageRef = useRef(0)
+
+  const playInboxAlertTone = () => {
+    if (typeof window === 'undefined') return
+
+    const WebAudioContext = window.AudioContext || window.webkitAudioContext
+    if (!WebAudioContext) return
+
+    try {
+      const context = new WebAudioContext()
+      const oscillator = context.createOscillator()
+      const gainNode = context.createGain()
+
+      oscillator.type = 'sine'
+      oscillator.frequency.setValueAtTime(880, context.currentTime)
+
+      gainNode.gain.setValueAtTime(0.0001, context.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.14, context.currentTime + 0.03)
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.3)
+
+      oscillator.connect(gainNode)
+      gainNode.connect(context.destination)
+
+      oscillator.start(context.currentTime)
+      oscillator.stop(context.currentTime + 0.3)
+      oscillator.onended = () => {
+        context.close().catch(() => {})
+      }
+    } catch {
+      // Ignore audio API errors (for example autoplay restrictions).
+    }
+  }
+
+  const handleUnreadCountChange = (count) => {
+    const normalizedCount = Number(count) || 0
+    setUnreadMessageCount(normalizedCount)
+    unreadMessageRef.current = normalizedCount
+  }
+
+  const handleToggleSoundAlerts = () => {
+    const nextValue = !inboxSoundAlertsEnabled
+    setInboxSoundAlertsEnabled(nextValue)
+
+    if (nextValue) {
+      playInboxAlertTone()
+    }
+  }
 
   const checkSmtpReadiness = async (options = {}) => {
     const { silent = false } = options
@@ -66,6 +119,46 @@ function AdminDashboard() {
   useEffect(() => {
     checkSmtpReadiness({ silent: true })
   }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem('adminInboxSoundAlerts', String(inboxSoundAlertsEnabled))
+  }, [inboxSoundAlertsEnabled])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined
+
+    let isCancelled = false
+
+    const syncUnreadCount = async (notifyOnIncrease = false) => {
+      try {
+        const response = await fetchAdminMessages({ status: 'unread', limit: 1 })
+        if (isCancelled) return
+
+        const nextUnread = Number(response?.stats?.unread ?? 0)
+        const previousUnread = unreadMessageRef.current
+
+        setUnreadMessageCount(nextUnread)
+        unreadMessageRef.current = nextUnread
+
+        if (notifyOnIncrease && inboxSoundAlertsEnabled && nextUnread > previousUnread) {
+          playInboxAlertTone()
+        }
+      } catch {
+        // Keep dashboard usable even if polling fails temporarily.
+      }
+    }
+
+    syncUnreadCount(false)
+    const intervalId = window.setInterval(() => {
+      syncUnreadCount(true)
+    }, 30000)
+
+    return () => {
+      isCancelled = true
+      window.clearInterval(intervalId)
+    }
+  }, [inboxSoundAlertsEnabled])
 
   const handleLogout = () => {
     dispatch(logout())
@@ -139,6 +232,7 @@ function AdminDashboard() {
     { id: 'education', label: 'Education', icon: GraduationCap },
     { id: 'skills', label: 'Skills', icon: Code2 },
     { id: 'projects', label: 'Projects', icon: FolderGit2 },
+    { id: 'messages', label: 'Messages', icon: Inbox },
   ]
 
   const renderContent = () => {
@@ -148,6 +242,7 @@ function AdminDashboard() {
       case 'education': return <AdminEducation />
       case 'skills': return <AdminSkills />
       case 'projects': return <AdminProjects />
+      case 'messages': return <AdminMessages onUnreadCountChange={handleUnreadCountChange} />
       default: return null
     }
   }
@@ -198,11 +293,42 @@ function AdminDashboard() {
                   }`}
                 >
                   <Icon size={18} className={isActive ? 'text-blue-700' : ''} />
-                  {tab.label}
+                  <span className="truncate">{tab.label}</span>
+                  {tab.id === 'messages' && unreadMessageCount > 0 ? (
+                    <span className={`ml-auto inline-flex min-w-[1.35rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold ${isActive ? 'bg-blue-600 text-white' : 'bg-slate-700 text-white'}`}>
+                      {unreadMessageCount > 99 ? '99+' : unreadMessageCount}
+                    </span>
+                  ) : null}
                 </button>
               )
             })}
           </nav>
+
+          <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Inbox sound alerts</p>
+                <p className="mt-1 text-xs text-slate-600">
+                  {inboxSoundAlertsEnabled
+                    ? 'Enabled · plays a tone when unread messages increase.'
+                    : 'Disabled · turn on to hear new-message alerts.'}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleToggleSoundAlerts}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
+                  inboxSoundAlertsEnabled
+                    ? 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {inboxSoundAlertsEnabled ? <Bell size={13} /> : <BellOff size={13} />}
+                {inboxSoundAlertsEnabled ? 'On' : 'Off'}
+              </button>
+            </div>
+          </div>
 
           <div className="mt-4 border-t border-slate-200 pt-4">
             <button

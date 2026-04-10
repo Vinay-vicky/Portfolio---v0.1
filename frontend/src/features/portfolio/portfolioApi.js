@@ -35,6 +35,41 @@ export const runSmtpHealthCheck = async (payload = { sendTestEmail: true }) => {
   return data
 }
 
+export const fetchAdminMessages = async (params = {}) => {
+  const query = new URLSearchParams()
+
+  if (params.q) {
+    query.set('q', params.q)
+  }
+
+  if (params.status && params.status !== 'all') {
+    query.set('status', params.status)
+  }
+
+  if (params.limit) {
+    query.set('limit', String(params.limit))
+  }
+
+  const suffix = query.toString() ? `?${query.toString()}` : ''
+  const { data } = await api.get(`/admin/messages${suffix}`)
+  return data
+}
+
+export const deleteAdminMessage = async (id) => {
+  const { data } = await api.delete(`/admin/messages/${id}`)
+  return data
+}
+
+export const updateAdminMessageStatus = async (id, status) => {
+  const { data } = await api.patch(`/admin/messages/${id}/status`, { status })
+  return data
+}
+
+export const markAllAdminMessagesRead = async () => {
+  const { data } = await api.post('/admin/messages/mark-all-read')
+  return data
+}
+
 export const getAssetUrl = (path) => {
   if (!path) return ''
   if (path.startsWith('http://') || path.startsWith('https://')) return path

@@ -119,6 +119,10 @@ If you keep an existing Render service created manually, make sure its settings 
 - `GET /api/portfolio` → profile + experiences + projects
 - `POST /api/contact` → save contact message to DB and send email notification
 - `POST /api/admin/smtp-test` → admin-only SMTP verification + optional probe email
+- `GET /api/admin/messages` → admin-only inbox list (`q` and `limit` query support)
+- `PATCH /api/admin/messages/:id/status` → admin-only status update (`unread` / `read` / `archived`)
+- `POST /api/admin/messages/mark-all-read` → admin-only bulk action for unread messages
+- `DELETE /api/admin/messages/:id` → admin-only delete message
 
 ## Next improvements you can add
 

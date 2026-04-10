@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import usePortfolioData from '../features/portfolio/usePortfolioData'
 import { getAssetUrl } from '../features/portfolio/portfolioApi'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, ExternalLink, Search, SlidersHorizontal, Sparkles, XCircle } from 'lucide-react'
+import { ArrowUpDown, ArrowUpRight, ExternalLink, Search, SlidersHorizontal, Sparkles, XCircle } from 'lucide-react'
 import usePageReveal from '../hooks/usePageReveal'
 
 function ProjectsPage() {
@@ -11,6 +11,7 @@ function ProjectsPage() {
   const [query, setQuery] = useState('')
   const [activeTech, setActiveTech] = useState('All')
   const [liveOnly, setLiveOnly] = useState(false)
+  const [sortBy, setSortBy] = useState('featured')
 
   const normalizeProjectUrl = (rawUrl) => {
     if (!rawUrl) return null
@@ -64,12 +65,40 @@ function ProjectsPage() {
     })
   }, [projectRecords, query, liveOnly, activeTech])
 
-  const hasActiveFilters = query.trim().length > 0 || activeTech !== 'All' || liveOnly
+  const sortedProjects = useMemo(() => {
+    const result = [...filteredProjects]
+
+    if (sortBy === 'az') {
+      result.sort((a, b) => a.title.localeCompare(b.title))
+      return result
+    }
+
+    if (sortBy === 'za') {
+      result.sort((a, b) => b.title.localeCompare(a.title))
+      return result
+    }
+
+    if (sortBy === 'live-first') {
+      result.sort((a, b) => {
+        if (Boolean(a.liveUrl) === Boolean(b.liveUrl)) {
+          return a.title.localeCompare(b.title)
+        }
+
+        return a.liveUrl ? -1 : 1
+      })
+      return result
+    }
+
+    return result
+  }, [filteredProjects, sortBy])
+
+  const hasActiveFilters = query.trim().length > 0 || activeTech !== 'All' || liveOnly || sortBy !== 'featured'
 
   const resetFilters = () => {
     setQuery('')
     setActiveTech('All')
     setLiveOnly(false)
+    setSortBy('featured')
   }
 
   if (loading && projects.length === 0) {
@@ -101,7 +130,7 @@ function ProjectsPage() {
 
           <div className="grid grid-cols-2 gap-3 self-start sm:min-w-[220px]">
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-center">
-              <p className="text-xl font-black text-slate-900">{filteredProjects.length}</p>
+              <p className="text-xl font-black text-slate-900">{sortedProjects.length}</p>
               <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Showing</p>
             </div>
             <div className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-center">
@@ -151,6 +180,28 @@ function ProjectsPage() {
           ) : null}
         </div>
 
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <ArrowUpDown size={14} />
+            Sort projects
+          </div>
+
+          <label className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <span className="sr-only">Sort projects</span>
+            <select
+              value={sortBy}
+              onChange={(event) => setSortBy(event.target.value)}
+              className="min-h-[40px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              aria-label="Sort projects"
+            >
+              <option value="featured">Featured order</option>
+              <option value="live-first">Live demos first</option>
+              <option value="az">Title A-Z</option>
+              <option value="za">Title Z-A</option>
+            </select>
+          </label>
+        </div>
+
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
           <SlidersHorizontal size={14} />
           Filter by tech stack
@@ -180,7 +231,7 @@ function ProjectsPage() {
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        {filteredProjects.map((project, index) => {
+        {sortedProjects.map((project, index) => {
           const projectUrl = project.liveUrl
           const cardClasses = `group overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-[0_14px_38px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_55px_rgba(37,99,235,0.16)] ${
             projectUrl ? 'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300' : ''
@@ -273,7 +324,7 @@ function ProjectsPage() {
           </article>
         ) : null}
 
-        {projects.length > 0 && filteredProjects.length === 0 ? (
+        {projects.length > 0 && sortedProjects.length === 0 ? (
           <article className="glass-card sm:col-span-2 xl:col-span-3" data-animate-reveal>
             <p className="text-sm text-slate-600 sm:text-base">No projects match your current filters. Try a different keyword or clear filters.</p>
             <button

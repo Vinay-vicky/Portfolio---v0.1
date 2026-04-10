@@ -68,6 +68,28 @@ export const initSchema = async () => {
       phone TEXT,
       subject TEXT,
       message TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'unread',
+      read_at TEXT,
+      archived_at TEXT,
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );`);
+
+  const contactColumns = await db.execute(`PRAGMA table_info(contact_messages);`);
+  const existingColumnNames = new Set(
+    contactColumns.rows.map((column) => String(column.name).toLowerCase())
+  );
+
+  if (!existingColumnNames.has("status")) {
+    await db.execute(
+      `ALTER TABLE contact_messages ADD COLUMN status TEXT NOT NULL DEFAULT 'unread';`
+    );
+  }
+
+  if (!existingColumnNames.has("read_at")) {
+    await db.execute(`ALTER TABLE contact_messages ADD COLUMN read_at TEXT;`);
+  }
+
+  if (!existingColumnNames.has("archived_at")) {
+    await db.execute(`ALTER TABLE contact_messages ADD COLUMN archived_at TEXT;`);
+  }
 };
