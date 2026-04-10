@@ -8,6 +8,7 @@ import contactRoutes from "./routes/contactRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import { initSchema } from "./db/schema.js";
+import { ensureAdminCredentialSeeded } from "./services/adminCredentialsService.js";
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ app.use((error, _req, res, _next) => {
 
 const start = async () => {
   await initSchema();
+  await ensureAdminCredentialSeeded();
   app.listen(PORT, () => {
     console.log(`Backend running on http://localhost:${PORT}`);
   });

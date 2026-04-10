@@ -61,6 +61,14 @@ export const initSchema = async () => {
       sort_order INTEGER NOT NULL DEFAULT 0
     );`);
 
+  await db.execute(`CREATE TABLE IF NOT EXISTS admin_credentials (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );`);
+
   await db.execute(`CREATE TABLE IF NOT EXISTS contact_messages (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,

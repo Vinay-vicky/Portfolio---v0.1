@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "db:seed": "node src/seed/seed.js"
+    "db:seed": "node src/seed/seed.js",
+    "admin:reset": "node src/scripts/resetAdminCredentials.js"
   },
   "keywords": [],
   "author": "",

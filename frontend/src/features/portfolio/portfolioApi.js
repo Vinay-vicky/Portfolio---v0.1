@@ -30,6 +30,11 @@ export const loginAdmin = async (credentials) => {
   return data
 }
 
+export const fetchAuthRecoveryStatus = async () => {
+  const { data } = await api.get('/auth/recovery-status')
+  return data
+}
+
 export const runSmtpHealthCheck = async (payload = { sendTestEmail: true }) => {
   const { data } = await api.post('/admin/smtp-test', payload)
   return data

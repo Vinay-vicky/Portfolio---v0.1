@@ -36,6 +36,13 @@ For contact email delivery to your inbox, configure SMTP in `backend/.env`:
 - `SMTP_PASS`
 - `SMTP_FROM` (optional display sender)
 
+For admin auth + lockout-safe recovery, also configure:
+
+- `ADMIN_USERNAME` (bootstrap admin username)
+- `ADMIN_PASSWORD` (bootstrap admin password)
+- `ADMIN_RECOVERY_KEY` (emergency recovery key used to reset credentials)
+- `JWT_SECRET`
+
 ### Turso setup
 
 When you are ready to use Turso cloud, set in `backend/.env`:
@@ -57,6 +64,7 @@ Scripts:
 
 - `npm run db:seed`
 - `npm run dev`
+- `npm run admin:reset -- --username admin --password "YourStrongPassword"` (emergency local credential reset)
 
 ### 2) Frontend
 
@@ -95,6 +103,7 @@ Required environment variables in Render:
 - `TURSO_AUTH_TOKEN`
 - `ADMIN_USERNAME`
 - `ADMIN_PASSWORD`
+- `ADMIN_RECOVERY_KEY`
 - `JWT_SECRET`
 - `CONTACT_RECEIVER_EMAIL`
 - `SMTP_HOST`
@@ -118,11 +127,23 @@ If you keep an existing Render service created manually, make sure its settings 
 - `GET /api/health` → health check
 - `GET /api/portfolio` → profile + experiences + projects
 - `POST /api/contact` → save contact message to DB and send email notification
+- `POST /api/auth/login` → admin login (JWT)
+- `GET /api/auth/recovery-status` → returns whether recovery key is configured
+- `POST /api/auth/recover` → reset admin credentials using `ADMIN_RECOVERY_KEY`
 - `POST /api/admin/smtp-test` → admin-only SMTP verification + optional probe email
 - `GET /api/admin/messages` → admin-only inbox list (`q`, `status`, `sort`, `page`, `limit` query support)
 - `PATCH /api/admin/messages/:id/status` → admin-only status update (`unread` / `read` / `archived`)
 - `POST /api/admin/messages/mark-all-read` → admin-only bulk action for unread messages
 - `DELETE /api/admin/messages/:id` → admin-only delete message
+
+## Admin credential safety workflow (recommended)
+
+1. Set `ADMIN_USERNAME`, `ADMIN_PASSWORD`, and `ADMIN_RECOVERY_KEY` in backend environment.
+2. Store the recovery key in a secure password manager (not in chat/logs).
+3. If locked out locally, run:
+	- `npm run admin:reset -- --username <new-username> --password <new-strong-password>`
+4. If locked out in hosted environment, call `POST /api/auth/recover` with recovery key and new credentials.
+5. Rotate admin password regularly and keep the recovery key unchanged unless compromised.
 
 ## Next improvements you can add
 
