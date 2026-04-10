@@ -50,6 +50,14 @@ export const fetchAdminMessages = async (params = {}) => {
     query.set('limit', String(params.limit))
   }
 
+  if (params.page) {
+    query.set('page', String(params.page))
+  }
+
+  if (params.sort) {
+    query.set('sort', String(params.sort))
+  }
+
   const suffix = query.toString() ? `?${query.toString()}` : ''
   const { data } = await api.get(`/admin/messages${suffix}`)
   return data

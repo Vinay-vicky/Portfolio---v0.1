@@ -5,7 +5,7 @@ import {
   markAllAdminMessagesRead,
   updateAdminMessageStatus,
 } from '../../features/portfolio/portfolioApi'
-import { Archive, CheckCheck, Inbox, Mail, RefreshCw, Reply, Search, Trash2, Undo2, XCircle } from 'lucide-react'
+import { Archive, CheckCheck, ChevronLeft, ChevronRight, Inbox, Mail, RefreshCw, Reply, Search, Trash2, Undo2, XCircle } from 'lucide-react'
 
 function AdminMessages({ onUnreadCountChange }) {
   const [messages, setMessages] = useState([])
@@ -13,6 +13,17 @@ function AdminMessages({ onUnreadCountChange }) {
   const [query, setQuery] = useState('')
   const [appliedQuery, setAppliedQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('newest')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    totalItems: 0,
+    totalPages: 1,
+    hasPreviousPage: false,
+    hasNextPage: false,
+  })
   const [error, setError] = useState(null)
   const [feedback, setFeedback] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
@@ -20,12 +31,34 @@ function AdminMessages({ onUnreadCountChange }) {
   const [markingAllRead, setMarkingAllRead] = useState(false)
   const [stats, setStats] = useState({ total: 0, unread: 0, read: 0, archived: 0 })
 
-  const fetchMessages = async (searchText = appliedQuery) => {
+  const fetchMessages = async ({ searchText = appliedQuery, pageNumber = page } = {}) => {
     try {
       setError(null)
-      const response = await fetchAdminMessages({ q: searchText, status: statusFilter, limit: 200 })
+      const response = await fetchAdminMessages({
+        q: searchText,
+        status: statusFilter,
+        sort: sortBy,
+        limit: pageSize,
+        page: pageNumber,
+      })
+
       setMessages(response.messages || [])
       setStats(response.stats || { total: 0, unread: 0, read: 0, archived: 0 })
+
+      const nextPagination = response.pagination || {
+        page: pageNumber,
+        limit: pageSize,
+        totalItems: response.messages?.length || 0,
+        totalPages: 1,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      }
+
+      setPagination(nextPagination)
+
+      if (nextPagination.page !== page) {
+        setPage(nextPagination.page)
+      }
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Unable to fetch messages.')
     } finally {
@@ -35,8 +68,8 @@ function AdminMessages({ onUnreadCountChange }) {
 
   useEffect(() => {
     setLoading(true)
-    fetchMessages(appliedQuery)
-  }, [appliedQuery, statusFilter])
+    fetchMessages({ searchText: appliedQuery, pageNumber: page })
+  }, [appliedQuery, statusFilter, sortBy, page, pageSize])
 
   useEffect(() => {
     if (typeof onUnreadCountChange === 'function') {
@@ -46,8 +79,9 @@ function AdminMessages({ onUnreadCountChange }) {
 
   const messageCountLabel = useMemo(() => {
     if (loading) return 'Loading…'
-    return `${messages.length} message${messages.length === 1 ? '' : 's'}`
-  }, [messages.length, loading])
+    if (!pagination.totalItems) return 'No messages'
+    return `Showing ${messages.length} of ${pagination.totalItems} message${pagination.totalItems === 1 ? '' : 's'}`
+  }, [loading, messages.length, pagination.totalItems])
 
   const formatDateTime = (value) => {
     if (!value) return 'Unknown date'
@@ -63,11 +97,13 @@ function AdminMessages({ onUnreadCountChange }) {
 
   const handleSearchSubmit = (event) => {
     event.preventDefault()
+    setPage(1)
     setAppliedQuery(query.trim())
   }
 
   const handleClearSearch = () => {
     setQuery('')
+    setPage(1)
     setAppliedQuery('')
   }
 
@@ -78,8 +114,11 @@ function AdminMessages({ onUnreadCountChange }) {
       setDeletingId(id)
       setFeedback(null)
       const response = await deleteAdminMessage(id)
-      setMessages((prev) => prev.filter((message) => message.id !== id))
       setStats(response.stats || stats)
+
+      const fallbackPage = messages.length === 1 && page > 1 ? page - 1 : page
+      setPage(fallbackPage)
+      await fetchMessages({ searchText: appliedQuery, pageNumber: fallbackPage })
       setFeedback({ type: 'success', text: 'Message deleted successfully.' })
     } catch (err) {
       setFeedback({ type: 'error', text: err.response?.data?.error || 'Failed to delete message.' })
@@ -93,17 +132,8 @@ function AdminMessages({ onUnreadCountChange }) {
       setUpdatingId(id)
       setFeedback(null)
       const response = await updateAdminMessageStatus(id, status)
-
-      setMessages((prev) => {
-        const updated = prev.map((message) => (message.id === id ? { ...message, ...response.data } : message))
-        if (statusFilter === 'all' || statusFilter === status) {
-          return updated
-        }
-
-        return updated.filter((message) => message.id !== id)
-      })
-
       setStats(response.stats || stats)
+      await fetchMessages({ searchText: appliedQuery, pageNumber: page })
       setFeedback({ type: 'success', text: `Message marked as ${status}.` })
     } catch (err) {
       setFeedback({ type: 'error', text: err.response?.data?.error || 'Failed to update status.' })
@@ -118,7 +148,8 @@ function AdminMessages({ onUnreadCountChange }) {
       setFeedback(null)
       const response = await markAllAdminMessagesRead()
       setStats(response.stats || stats)
-      await fetchMessages(appliedQuery)
+      setPage(1)
+      await fetchMessages({ searchText: appliedQuery, pageNumber: 1 })
       setFeedback({ type: 'success', text: response.message || 'All unread messages marked as read.' })
     } catch (err) {
       setFeedback({ type: 'error', text: err.response?.data?.error || 'Failed to mark all as read.' })
@@ -152,13 +183,58 @@ function AdminMessages({ onUnreadCountChange }) {
           type="button"
           onClick={() => {
             setLoading(true)
-            fetchMessages(appliedQuery)
+            fetchMessages({ searchText: appliedQuery, pageNumber: page })
           }}
           className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
         >
           <RefreshCw size={14} />
           Refresh
         </button>
+      </div>
+
+      <div className="mb-4 grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 sm:grid-cols-2 lg:grid-cols-4">
+        <label className="flex flex-col gap-1 text-xs font-semibold text-slate-500">
+          Sort by
+          <select
+            value={sortBy}
+            onChange={(event) => {
+              setSortBy(event.target.value)
+              setPage(1)
+            }}
+            className="min-h-[40px] rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="name-az">Name A-Z</option>
+            <option value="name-za">Name Z-A</option>
+          </select>
+        </label>
+
+        <label className="flex flex-col gap-1 text-xs font-semibold text-slate-500">
+          Page size
+          <select
+            value={pageSize}
+            onChange={(event) => {
+              setPageSize(Number(event.target.value) || 20)
+              setPage(1)
+            }}
+            className="min-h-[40px] rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            <option value={10}>10 per page</option>
+            <option value={20}>20 per page</option>
+            <option value={50}>50 per page</option>
+          </select>
+        </label>
+
+        <div className="rounded-lg border border-slate-200 bg-white px-3 py-2">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Page</p>
+          <p className="mt-1 text-sm font-bold text-slate-800">{pagination.page} / {pagination.totalPages}</p>
+        </div>
+
+        <div className="rounded-lg border border-slate-200 bg-white px-3 py-2">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Total matched</p>
+          <p className="mt-1 text-sm font-bold text-slate-800">{pagination.totalItems}</p>
+        </div>
       </div>
 
       <div className="mb-5 flex flex-wrap gap-2">
@@ -168,7 +244,10 @@ function AdminMessages({ onUnreadCountChange }) {
             <button
               key={tab.id}
               type="button"
-              onClick={() => setStatusFilter(tab.id)}
+              onClick={() => {
+                setStatusFilter(tab.id)
+                setPage(1)
+              }}
               aria-pressed={active}
               className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition sm:text-sm ${
                 active
@@ -347,6 +426,34 @@ function AdminMessages({ onUnreadCountChange }) {
               </article>
             )
           })}
+
+          <div className="mt-4 flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs font-semibold text-slate-600">
+              Showing page {pagination.page} of {pagination.totalPages}
+            </p>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                disabled={!pagination.hasPreviousPage || loading}
+                className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <ChevronLeft size={13} />
+                Previous
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPage((prev) => prev + 1)}
+                disabled={!pagination.hasNextPage || loading}
+                className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Next
+                <ChevronRight size={13} />
+              </button>
+            </div>
+          </div>
         </div>
       ) : null}
     </div>

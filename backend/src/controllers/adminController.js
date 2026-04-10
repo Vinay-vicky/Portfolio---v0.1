@@ -5,6 +5,23 @@ import {
 import { db } from "../db/client.js";
 
 const validMessageStatuses = new Set(["unread", "read", "archived"]);
+const validMessageSorts = new Set(["newest", "oldest", "name-az", "name-za"]);
+
+const getMessageSortClause = (sortBy) => {
+  if (sortBy === "oldest") {
+    return "ORDER BY datetime(created_at) ASC, id ASC";
+  }
+
+  if (sortBy === "name-az") {
+    return "ORDER BY lower(name) ASC, datetime(created_at) DESC, id DESC";
+  }
+
+  if (sortBy === "name-za") {
+    return "ORDER BY lower(name) DESC, datetime(created_at) DESC, id DESC";
+  }
+
+  return "ORDER BY datetime(created_at) DESC, id DESC";
+};
 
 const getMessageStats = async () => {
   const result = await db.execute({
@@ -60,14 +77,27 @@ export const listContactMessages = async (req, res, next) => {
   try {
     const q = req.query?.q?.trim() || "";
     const statusParam = req.query?.status?.trim().toLowerCase() || "all";
+    const sortParam = req.query?.sort?.trim().toLowerCase() || "newest";
+    const requestedPage = Number(req.query?.page);
     const requestedLimit = Number(req.query?.limit);
+
+    const page = Number.isFinite(requestedPage)
+      ? Math.max(1, Math.floor(requestedPage))
+      : 1;
+
     const limit = Number.isFinite(requestedLimit)
-      ? Math.max(1, Math.min(requestedLimit, 500))
-      : 100;
+      ? Math.max(1, Math.min(Math.floor(requestedLimit), 100))
+      : 20;
 
     if (statusParam !== "all" && !validMessageStatuses.has(statusParam)) {
       return res.status(400).json({
         error: "Invalid status filter. Use all, unread, read, or archived.",
+      });
+    }
+
+    if (!validMessageSorts.has(sortParam)) {
+      return res.status(400).json({
+        error: "Invalid sort option. Use newest, oldest, name-az, or name-za.",
       });
     }
 
@@ -95,13 +125,26 @@ export const listContactMessages = async (req, res, next) => {
       ? `WHERE ${whereParts.join(" AND ")}`
       : "";
 
+    const countResult = await db.execute({
+      sql: `SELECT COUNT(*) AS total
+            FROM contact_messages
+            ${whereClause}`,
+      args,
+    });
+
+    const totalItems = Number(countResult.rows?.[0]?.total || 0);
+    const totalPages = Math.max(1, Math.ceil(totalItems / limit));
+    const safePage = Math.min(page, totalPages);
+    const offset = (safePage - 1) * limit;
+    const orderByClause = getMessageSortClause(sortParam);
+
     const result = await db.execute({
       sql: `SELECT id, name, email, phone, subject, message, status, read_at, archived_at, created_at
             FROM contact_messages
             ${whereClause}
-            ORDER BY datetime(created_at) DESC, id DESC
-            LIMIT ?`,
-      args: [...args, limit],
+            ${orderByClause}
+            LIMIT ? OFFSET ?`,
+      args: [...args, limit, offset],
     });
 
     const stats = await getMessageStats();
@@ -110,6 +153,15 @@ export const listContactMessages = async (req, res, next) => {
       success: true,
       count: result.rows.length,
       stats,
+      sort: sortParam,
+      pagination: {
+        page: safePage,
+        limit,
+        totalItems,
+        totalPages,
+        hasPreviousPage: safePage > 1,
+        hasNextPage: safePage < totalPages,
+      },
       messages: result.rows,
     });
   } catch (error) {
