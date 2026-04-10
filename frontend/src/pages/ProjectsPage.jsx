@@ -92,6 +92,9 @@ function ProjectsPage() {
     return result
   }, [filteredProjects, sortBy])
 
+  const spotlightProject = sortedProjects[0] || null
+  const gridProjects = spotlightProject ? sortedProjects.slice(1) : []
+
   const hasActiveFilters = query.trim().length > 0 || activeTech !== 'All' || liveOnly || sortBy !== 'featured'
 
   const resetFilters = () => {
@@ -114,11 +117,11 @@ function ProjectsPage() {
   }
 
   return (
-    <section ref={sectionRef} className="space-y-10 sm:space-y-12">
-      <div className="glass-card space-y-5" data-animate-intro>
+    <section ref={sectionRef} className="space-y-8 sm:space-y-10">
+      <div className="section-shell space-y-5" data-animate-intro>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-2xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-cyan-700">
+            <p className="section-eyebrow border-cyan-200 bg-cyan-50 text-cyan-700">
               <Sparkles size={14} />
               Featured Work
             </p>
@@ -141,7 +144,7 @@ function ProjectsPage() {
         </div>
       </div>
 
-      <div className="glass-card space-y-4" data-animate-reveal>
+      <div className="section-shell-muted space-y-4" data-animate-reveal>
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <label className="relative block flex-1">
             <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -228,11 +231,75 @@ function ProjectsPage() {
             )
           })}
         </div>
+
+        <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Filter summary</p>
+          <p className="mt-1 text-sm text-slate-600">
+            {hasActiveFilters
+              ? `${sortedProjects.length} project${sortedProjects.length === 1 ? '' : 's'} matched your current filters.`
+              : `Showing all ${projects.length} project${projects.length === 1 ? '' : 's'} in featured order.`}
+          </p>
+        </div>
       </div>
 
+      {spotlightProject ? (
+        <article className="section-shell" data-animate-reveal>
+          <div className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+            <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+              {spotlightProject.image_url ? (
+                <img
+                  src={getAssetUrl(spotlightProject.image_url)}
+                  alt={spotlightProject.title}
+                  className="h-full max-h-[360px] w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-[280px] items-center justify-center bg-gradient-to-br from-blue-100 via-cyan-100 to-violet-100 text-sm font-semibold text-slate-600">
+                  Featured preview
+                </div>
+              )}
+              <span className="absolute left-3 top-3 rounded-full border border-white/70 bg-slate-900/60 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                Spotlight
+              </span>
+            </div>
+
+            <div>
+              <p className="section-eyebrow border-blue-200 bg-blue-50 text-blue-700">Top highlighted project</p>
+              <h2 className="mt-3 text-2xl font-black text-slate-900 sm:text-3xl">{spotlightProject.title}</h2>
+              <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">{spotlightProject.description}</p>
+
+              {spotlightProject.techList.length > 0 ? (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {spotlightProject.techList.slice(0, 6).map((stack) => (
+                    <span key={`spotlight-${spotlightProject.id}-${stack}`} className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700">
+                      {stack}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                {spotlightProject.liveUrl ? (
+                  <a
+                    href={spotlightProject.liveUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-primary w-full gap-2 sm:w-auto"
+                  >
+                    Open Live Demo
+                    <ExternalLink size={14} />
+                  </a>
+                ) : null}
+                <Link to="/contact" className="btn-secondary w-full sm:w-auto">Discuss Similar Build</Link>
+              </div>
+            </div>
+          </div>
+        </article>
+      ) : null}
+
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        {sortedProjects.map((project, index) => {
+        {gridProjects.map((project, index) => {
           const projectUrl = project.liveUrl
+          const displayIndex = index + 2
           const cardClasses = `group overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-[0_14px_38px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_55px_rgba(37,99,235,0.16)] ${
             projectUrl ? 'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300' : ''
           }`
@@ -267,7 +334,7 @@ function ProjectsPage() {
                   </h2>
 
                   <span className="inline-flex shrink-0 rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-slate-500">
-                    #{String(index + 1).padStart(2, '0')}
+                    #{String(displayIndex).padStart(2, '0')}
                   </span>
                 </div>
 
@@ -338,7 +405,7 @@ function ProjectsPage() {
         ) : null}
       </div>
 
-      <div className="rounded-2xl bg-gradient-primary-to-secondary px-5 py-8 text-center text-white shadow-lg shadow-cyan-200 sm:px-8 sm:py-10" data-animate-reveal>
+      <div className="section-shell overflow-hidden bg-gradient-primary-to-secondary px-5 py-8 text-center text-white shadow-lg shadow-cyan-200 sm:px-8 sm:py-10" data-animate-reveal>
         <h2 className="text-2xl font-black sm:text-3xl">Let&apos;s build something together</h2>
         <Link
           to="/contact"

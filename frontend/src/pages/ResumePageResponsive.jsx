@@ -13,6 +13,16 @@ function ResumePageResponsive() {
     return acc
   }, {})
 
+  const totalSkillCount = skills.length
+  const skillCategoryCount = Object.keys(groupedSkills).length
+
+  const resumeMetrics = [
+    { label: 'Experience entries', value: experiences.length },
+    { label: 'Education entries', value: education.length },
+    { label: 'Skill categories', value: skillCategoryCount },
+    { label: 'Total skills', value: totalSkillCount },
+  ]
+
   if (loading && experiences.length === 0 && education.length === 0) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
@@ -26,12 +36,13 @@ function ResumePageResponsive() {
   }
 
   return (
-    <section ref={sectionRef} className="space-y-10 sm:space-y-12">
-      <div className="glass-card flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between" data-animate-intro>
+    <section ref={sectionRef} className="space-y-8 sm:space-y-10">
+      <div className="section-shell flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between" data-animate-intro>
         <div className="max-w-2xl">
-          <h1 className="section-title text-gradient">Resume</h1>
+          <p className="section-eyebrow border-blue-200 bg-blue-50 text-blue-700">Career snapshot</p>
+          <h1 className="section-title mt-3 text-gradient">Resume</h1>
           <p className="mt-2 text-sm text-slate-600 sm:text-base">
-            My professional experience, academic background, and core skills in one place.
+            My experience, education, and technical strengths presented in a clean, modern timeline.
           </p>
         </div>
 
@@ -48,8 +59,17 @@ function ResumePageResponsive() {
         ) : null}
       </div>
 
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {resumeMetrics.map((item) => (
+          <article key={item.label} className="stat-tile" data-animate-reveal>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{item.label}</p>
+            <p className="mt-1.5 text-2xl font-black text-slate-900">{item.value}</p>
+          </article>
+        ))}
+      </div>
+
       {profile?.about_text ? (
-        <article className="glass-card" data-animate-reveal>
+        <article className="section-shell-muted" data-animate-reveal>
           <h2 className="text-xl font-black text-slate-900 sm:text-2xl">Professional Summary</h2>
           <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-600 sm:text-base">
             {profile.about_text}
@@ -101,7 +121,7 @@ function ResumePageResponsive() {
               ))}
             </ol>
           ) : (
-            <article className="glass-card" data-animate-reveal>
+            <article className="section-shell-muted" data-animate-reveal>
               <p className="text-sm text-slate-600 sm:text-base">No experience entries available yet.</p>
             </article>
           )}
@@ -144,7 +164,7 @@ function ResumePageResponsive() {
               ))}
             </ol>
           ) : (
-            <article className="glass-card" data-animate-reveal>
+            <article className="section-shell-muted" data-animate-reveal>
               <p className="text-sm text-slate-600 sm:text-base">No education entries available yet.</p>
             </article>
           )}
@@ -161,8 +181,22 @@ function ResumePageResponsive() {
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {Object.entries(groupedSkills).map(([category, entries]) => (
-            <article key={category} className="glass-card" data-animate-reveal>
-              <h3 className="text-lg font-black text-blue-700">{category}</h3>
+            <article key={category} className="section-shell-muted" data-animate-reveal>
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-lg font-black text-blue-700">{category}</h3>
+                <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-blue-700">
+                  {entries.length}
+                </span>
+              </div>
+
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-blue-500 via-cyan-500 to-violet-500"
+                  style={{ width: `${Math.max(18, Math.round((entries.length / Math.max(totalSkillCount, 1)) * 100))}%` }}
+                  aria-hidden="true"
+                />
+              </div>
+
               <ul className="mt-3 flex flex-wrap gap-2">
                 {entries.map((entry) => (
                   <li key={entry.id} className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 sm:text-sm">

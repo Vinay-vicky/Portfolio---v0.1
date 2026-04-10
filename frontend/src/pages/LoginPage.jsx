@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { login } from '../features/auth/authSlice'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
-import { ShieldAlert, KeyRound, UserRound } from 'lucide-react'
+import { KeyRound, ShieldAlert, Sparkles, UserRound } from 'lucide-react'
 
 function LoginPage() {
   const [username, setUsername] = useState('')
@@ -30,72 +30,94 @@ function LoginPage() {
 
   return (
     <div ref={container} className="flex min-h-[70vh] items-center justify-center p-4">
-      <div className="login-card w-full max-w-md glass-card !p-6 sm:!p-8">
-        <div className="text-center mb-8">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-700 sm:h-16 sm:w-16">
-            <ShieldAlert size={32} />
-          </div>
-          <h1 className="text-2xl font-black text-slate-900">Admin Access</h1>
-          <p className="mt-2 text-sm text-slate-600">Sign in to manage your portfolio</p>
-        </div>
+      <div className="login-card w-full max-w-4xl overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.12)]">
+        <div className="grid md:grid-cols-[0.9fr_1.1fr]">
+          <aside className="relative hidden overflow-hidden bg-gradient-to-br from-blue-700 via-cyan-600 to-violet-600 p-8 text-white md:block">
+            <div className="pointer-events-none absolute -right-14 -top-16 h-52 w-52 rounded-full bg-white/15 blur-2xl" />
+            <p className="inline-flex items-center gap-1.5 rounded-full border border-white/35 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide">
+              <Sparkles size={12} />
+              Secure access
+            </p>
+            <h2 className="mt-5 text-3xl font-black leading-tight">Portfolio Control Center</h2>
+            <p className="mt-3 text-sm leading-relaxed text-blue-100">
+              Sign in to manage profile content, projects, skills, and inbox operations from a single dashboard.
+            </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="form-element space-y-2 relative">
-            <label className="text-sm font-semibold text-slate-700" htmlFor="username">Username</label>
-            <div className="relative">
-              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                <UserRound size={18} />
-              </span>
-              <input
-                id="username"
-                type="text"
-                required
-                className="w-full rounded-xl border border-slate-300 bg-white p-3 pl-10 text-slate-800 placeholder-slate-400 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                placeholder="admin"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
+            <ul className="mt-6 space-y-3 text-sm text-blue-50">
+              <li className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-white" />Update portfolio data instantly</li>
+              <li className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-white" />Handle contact inbox efficiently</li>
+              <li className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-white" />Run SMTP checks and delivery tests</li>
+            </ul>
+          </aside>
+
+          <div className="p-6 sm:p-8">
+            <div className="mb-8 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-700 sm:h-16 sm:w-16">
+                <ShieldAlert size={30} />
+              </div>
+              <h1 className="text-2xl font-black text-slate-900">Admin Access</h1>
+              <p className="mt-2 text-sm text-slate-600">Sign in to manage your portfolio</p>
             </div>
-          </div>
 
-          <div className="form-element space-y-2 relative">
-            <label className="text-sm font-semibold text-slate-700" htmlFor="password">Password</label>
-            <div className="relative">
-              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                <KeyRound size={18} />
-              </span>
-              <input
-                id="password"
-                type="password"
-                required
-                className="w-full rounded-xl border border-slate-300 bg-white p-3 pl-10 text-slate-800 placeholder-slate-400 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="form-element space-y-2 relative">
+                <label className="text-sm font-semibold text-slate-700" htmlFor="username">Username</label>
+                <div className="relative">
+                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                    <UserRound size={18} />
+                  </span>
+                  <input
+                    id="username"
+                    type="text"
+                    required
+                    className="w-full rounded-xl border border-slate-300 bg-white p-3 pl-10 text-slate-800 placeholder-slate-400 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    placeholder="admin"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </div>
+              </div>
 
-          {error && (
-            <div className="form-element rounded-lg border border-red-200 bg-red-50 p-3 text-center text-sm text-red-700">
-              {error}
-            </div>
-          )}
+              <div className="form-element space-y-2 relative">
+                <label className="text-sm font-semibold text-slate-700" htmlFor="password">Password</label>
+                <div className="relative">
+                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                    <KeyRound size={18} />
+                  </span>
+                  <input
+                    id="password"
+                    type="password"
+                    required
+                    className="w-full rounded-xl border border-slate-300 bg-white p-3 pl-10 text-slate-800 placeholder-slate-400 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+              </div>
 
-          <div className="form-element pt-2">
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-500 disabled:pointer-events-none disabled:opacity-70"
-            >
-              {loading ? (
-                <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
-              ) : (
-                'Sign In'
+              {error && (
+                <div className="form-element rounded-lg border border-red-200 bg-red-50 p-3 text-center text-sm text-red-700">
+                  {error}
+                </div>
               )}
-            </button>
+
+              <div className="form-element pt-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-500 disabled:pointer-events-none disabled:opacity-70"
+                >
+                  {loading ? (
+                    <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
+                  ) : (
+                    'Sign In'
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   )
