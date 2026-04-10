@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { login } from '../features/auth/authSlice'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
-import { AlertTriangle, CheckCircle2, Copy, KeyRound, ShieldAlert, Sparkles, UserRound } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Copy, Download, KeyRound, ShieldAlert, Sparkles, UserRound } from 'lucide-react'
 import { fetchAuthRecoveryStatus } from '../features/portfolio/portfolioApi'
 
 function LoginPage() {
@@ -86,24 +86,24 @@ function LoginPage() {
     ].join('\n')
   }
 
+  const showChecklistFeedback = (status, message) => {
+    setCopyState({ status, message })
+    if (copyResetTimer.current) {
+      window.clearTimeout(copyResetTimer.current)
+    }
+
+    copyResetTimer.current = window.setTimeout(() => {
+      setCopyState({ status: 'idle', message: '' })
+    }, 2800)
+  }
+
   const copyRecoveryChecklist = async () => {
     const checklist = buildRecoveryChecklist()
-
-    const markFeedback = (status, message) => {
-      setCopyState({ status, message })
-      if (copyResetTimer.current) {
-        window.clearTimeout(copyResetTimer.current)
-      }
-
-      copyResetTimer.current = window.setTimeout(() => {
-        setCopyState({ status: 'idle', message: '' })
-      }, 2800)
-    }
 
     try {
       if (navigator?.clipboard?.writeText) {
         await navigator.clipboard.writeText(checklist)
-        markFeedback('success', 'Recovery checklist copied.')
+        showChecklistFeedback('success', 'Recovery checklist copied.')
         return
       }
 
@@ -118,12 +118,31 @@ function LoginPage() {
       document.body.removeChild(fallbackTextArea)
 
       if (copied) {
-        markFeedback('success', 'Recovery checklist copied.')
+        showChecklistFeedback('success', 'Recovery checklist copied.')
       } else {
-        markFeedback('error', 'Copy failed. Please copy manually.')
+        showChecklistFeedback('error', 'Copy failed. Please copy manually.')
       }
     } catch {
-      markFeedback('error', 'Copy failed. Please copy manually.')
+      showChecklistFeedback('error', 'Copy failed. Please copy manually.')
+    }
+  }
+
+  const downloadRecoveryChecklist = () => {
+    try {
+      const checklist = buildRecoveryChecklist()
+      const fileName = `admin-recovery-checklist-${new Date().toISOString().slice(0, 10)}.txt`
+      const checklistBlob = new Blob([checklist], { type: 'text/plain;charset=utf-8' })
+      const objectUrl = window.URL.createObjectURL(checklistBlob)
+      const downloadLink = document.createElement('a')
+      downloadLink.href = objectUrl
+      downloadLink.download = fileName
+      document.body.appendChild(downloadLink)
+      downloadLink.click()
+      document.body.removeChild(downloadLink)
+      window.URL.revokeObjectURL(objectUrl)
+      showChecklistFeedback('success', `Recovery checklist downloaded (${fileName}).`)
+    } catch {
+      showChecklistFeedback('error', 'Download failed. Please copy checklist instead.')
     }
   }
 
@@ -224,6 +243,15 @@ function LoginPage() {
                   >
                     <Copy size={12} />
                     Copy recovery checklist
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={downloadRecoveryChecklist}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                  >
+                    <Download size={12} />
+                    Download .txt checklist
                   </button>
 
                   {copyState.status !== 'idle' ? (
