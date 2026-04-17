@@ -78,6 +78,18 @@ const parseId = (value) => {
   return Number.isFinite(id) && id > 0 ? id : null;
 };
 
+const getSafeNumber = (value, fallback = 0) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const toIsoDate = (rawDate) => {
+  if (!rawDate) return null;
+  const parsed = new Date(rawDate);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed.toISOString();
+};
+
 export const getPortfolioData = async (_req, res, next) => {
   try {
     const profileResult = await db.execute("SELECT * FROM profile LIMIT 1");
@@ -102,6 +114,189 @@ export const getPortfolioData = async (_req, res, next) => {
       education: educationResult.rows,
       skills: skillsResult.rows,
       projects: projectResult.rows,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getResumeJson = async (_req, res, next) => {
+  try {
+    const profileResult = await db.execute("SELECT * FROM profile LIMIT 1");
+    const experienceResult = await db.execute("SELECT * FROM experiences ORDER BY start_date DESC, id DESC");
+    const educationResult = await db.execute("SELECT * FROM education ORDER BY id ASC");
+    const skillsResult = await db.execute("SELECT * FROM skills ORDER BY category ASC, sort_order ASC, id ASC");
+    const projectResult = await db.execute("SELECT * FROM projects ORDER BY sort_order ASC, id ASC");
+
+    const profile = profileResult.rows[0] ?? null;
+    const experiences = experienceResult.rows;
+    const education = educationResult.rows;
+    const skills = skillsResult.rows;
+    const projects = projectResult.rows;
+
+    const jsonLd = profile
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: profile.full_name,
+          jobTitle: profile.role,
+          description: profile.bio,
+          email: profile.email ? `mailto:${profile.email}` : undefined,
+          telephone: profile.phone || undefined,
+          address: profile.location
+            ? {
+                "@type": "PostalAddress",
+                addressLocality: profile.location,
+              }
+            : undefined,
+          sameAs: [
+            profile.github_url,
+            profile.linkedin_url,
+            profile.instagram_url,
+            profile.facebook_url,
+            profile.whatsapp_url,
+          ].filter(Boolean),
+          knowsAbout: skills.map((skill) => skill.name),
+          worksFor: experiences.slice(0, 5).map((item) => ({
+            "@type": "Organization",
+            name: item.company,
+            url: item.company_url || undefined,
+          })),
+        }
+      : null;
+
+    const payload = {
+      generatedAt: new Date().toISOString(),
+      schemaVersion: "portfolio.resume.2026.1",
+      basics: profile
+        ? {
+            name: profile.full_name,
+            role: profile.role,
+            tagline: profile.tagline,
+            quote: profile.quote,
+            summary: profile.about_text || profile.bio,
+            email: profile.email,
+            phone: profile.phone,
+            location: profile.location,
+            links: {
+              github: profile.github_url,
+              linkedin: profile.linkedin_url,
+              whatsapp: profile.whatsapp_url,
+              instagram: profile.instagram_url,
+              facebook: profile.facebook_url,
+              resumePdf: profile.resume_pdf_url,
+            },
+          }
+        : null,
+      experience: experiences.map((item) => ({
+        company: item.company,
+        companyUrl: item.company_url,
+        position: item.position,
+        periodLabel: item.period_label,
+        startDate: item.start_date,
+        endDate: item.end_date,
+        location: item.location,
+        description: item.description,
+      })),
+      education: education.map((item) => ({
+        institution: item.institution,
+        years: item.years,
+        location: item.location,
+        level: item.level,
+        field: item.field,
+        description: item.description,
+      })),
+      skills: skills.map((item) => ({
+        category: item.category,
+        name: item.name,
+        sortOrder: getSafeNumber(item.sort_order),
+      })),
+      projects: projects.map((item) => ({
+        title: item.title,
+        description: item.description,
+        techStack: item.tech_stack,
+        url: item.project_url,
+      })),
+      jsonLd,
+    };
+
+    res.setHeader("Cache-Control", "public, max-age=300");
+    res.json(payload);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTrustPanel = async (_req, res, next) => {
+  try {
+    const uptimeSeconds = Math.max(0, Math.floor(process.uptime()));
+    const startedAt = new Date(Date.now() - uptimeSeconds * 1000).toISOString();
+
+    let databaseHealthy = false;
+    try {
+      const ping = await db.execute("SELECT 1 AS ok");
+      databaseHealthy = Boolean(ping.rows.length);
+    } catch {
+      databaseHealthy = false;
+    }
+
+    const inboxStatsResult = await db.execute({
+      sql: `SELECT status, COUNT(*) AS count
+            FROM contact_messages
+            GROUP BY status`,
+    });
+
+    const inboxStats = {
+      total: 0,
+      unread: 0,
+      read: 0,
+      archived: 0,
+    };
+
+    for (const row of inboxStatsResult.rows) {
+      const status = String(row.status || "").toLowerCase();
+      const count = getSafeNumber(row.count);
+
+      if (status === "unread" || status === "read" || status === "archived") {
+        inboxStats[status] = count;
+        inboxStats.total += count;
+      }
+    }
+
+    const lighthouseScore = getSafeNumber(process.env.APP_LIGHTHOUSE_SCORE, NaN);
+    const recentDeployAt = toIsoDate(process.env.APP_BUILD_TIME);
+
+    res.setHeader("Cache-Control", "no-store");
+    res.json({
+      generatedAt: new Date().toISOString(),
+      api: {
+        healthy: true,
+        uptimeSeconds,
+        startedAt,
+        nodeVersion: process.version,
+        env: process.env.NODE_ENV || "development",
+      },
+      database: {
+        healthy: databaseHealthy,
+        mode: String(process.env.TURSO_DATABASE_URL || "").startsWith("file:") ? "sqlite-file" : "turso-libsql",
+      },
+      contactInbox: inboxStats,
+      quality: {
+        tests: process.env.APP_TEST_STATUS || "unknown",
+        commitSha: process.env.APP_BUILD_SHA || null,
+        recentDeployAt,
+        lighthouseScore: Number.isFinite(lighthouseScore) ? Math.max(0, Math.min(100, lighthouseScore)) : null,
+      },
+      alerts: {
+        recoveryConfigured: Boolean(process.env.ADMIN_RECOVERY_KEY && process.env.ADMIN_RECOVERY_KEY.trim()),
+        smtpConfigured: Boolean(
+          process.env.SMTP_HOST &&
+            process.env.SMTP_PORT &&
+            process.env.SMTP_USER &&
+            process.env.SMTP_PASS &&
+            process.env.CONTACT_RECEIVER_EMAIL
+        ),
+      },
     });
   } catch (error) {
     next(error);

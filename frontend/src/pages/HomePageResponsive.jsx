@@ -1,7 +1,7 @@
 import usePortfolioData from '../features/portfolio/usePortfolioData'
-import { getAssetUrl } from '../features/portfolio/portfolioApi'
+import { getAssetUrl, getResumeJsonUrl } from '../features/portfolio/portfolioApi'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Briefcase, Code2, Download, FolderKanban, MapPin, MessageCircle, Sparkles } from 'lucide-react'
+import { ArrowRight, BrainCircuit, Briefcase, Code2, Download, FolderKanban, MapPin, MessageCircle, Sparkles } from 'lucide-react'
 import { FaFacebook, FaGithub, FaInstagram, FaLinkedin } from 'react-icons/fa'
 import usePageReveal from '../hooks/usePageReveal'
 
@@ -41,6 +41,7 @@ const socialConfig = [
 function HomePageResponsive() {
   const { profile, projects, skills, experiences, loading, error } = usePortfolioData()
   const sectionRef = usePageReveal()
+  const resumeJsonUrl = getResumeJsonUrl()
 
   const quickStats = [
     {
@@ -122,6 +123,20 @@ function HomePageResponsive() {
                   Download CV
                 </a>
               ) : null}
+
+              <Link to="/innovation-lab" className="btn-secondary w-full gap-2 sm:w-auto">
+                <BrainCircuit size={16} />
+                Open Innovation Lab
+              </Link>
+
+              <a
+                href={resumeJsonUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-secondary w-full gap-2 sm:w-auto"
+              >
+                Resume JSON API
+              </a>
             </div>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -249,6 +264,29 @@ function HomePageResponsive() {
           </div>
         </article>
       </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Person',
+            name: profile?.full_name || 'Portfolio Owner',
+            jobTitle: profile?.role || 'Software Developer',
+            description: profile?.bio || profile?.about_text || 'Portfolio profile',
+            email: profile?.email ? `mailto:${profile.email}` : undefined,
+            telephone: profile?.phone || undefined,
+            sameAs: [
+              profile?.github_url,
+              profile?.linkedin_url,
+              profile?.instagram_url,
+              profile?.facebook_url,
+              profile?.whatsapp_url,
+            ].filter(Boolean),
+            knowsAbout: skills.map((entry) => entry.name),
+          }),
+        }}
+      />
     </section>
   )
 }

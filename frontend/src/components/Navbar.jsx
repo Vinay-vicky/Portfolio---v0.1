@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { ChevronRight, FolderGit2, Home, Mail, Menu, MoonStar, Sparkles, SunMedium, UserRound, X } from 'lucide-react'
+import { BrainCircuit, ChevronRight, FolderGit2, Home, Mail, Menu, MoonStar, Sparkles, SunMedium, UserRound, X } from 'lucide-react'
 import { useTheme } from '../app/themeContext'
 
 const links = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/resume', label: 'Resume', icon: UserRound },
   { to: '/projects', label: 'Projects', icon: FolderGit2 },
+  { to: '/innovation-lab', label: 'Innovation', icon: BrainCircuit },
   { to: '/contact', label: 'Contact', icon: Mail },
 ]
 

@@ -20,6 +20,16 @@ export const fetchPortfolio = async () => {
   return data
 }
 
+export const fetchResumeJson = async () => {
+  const { data } = await api.get('/portfolio/resume-json')
+  return data
+}
+
+export const fetchTrustPanel = async () => {
+  const { data } = await api.get('/portfolio/trust-panel')
+  return data
+}
+
 export const submitContactForm = async (payload) => {
   const { data } = await api.post('/contact', payload)
   return data
@@ -88,3 +98,10 @@ export const getAssetUrl = (path) => {
   if (path.startsWith('http://') || path.startsWith('https://')) return path
   return `${backendBaseUrl}${path}`
 }
+
+export const getApiEndpointUrl = (path) => {
+  if (!path) return apiBaseUrl
+  return `${apiBaseUrl}${path.startsWith('/') ? path : `/${path}`}`
+}
+
+export const getResumeJsonUrl = () => getApiEndpointUrl('/portfolio/resume-json')

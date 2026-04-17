@@ -6,6 +6,7 @@ const quickLinks = [
   { to: '/', label: 'Home' },
   { to: '/resume', label: 'Resume' },
   { to: '/projects', label: 'Projects' },
+  { to: '/innovation-lab', label: 'Innovation Lab' },
   { to: '/contact', label: 'Contact' },
 ]
 

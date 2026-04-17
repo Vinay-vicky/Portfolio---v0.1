@@ -8,6 +8,19 @@ This project has been upgraded from a static HTML portfolio to a full-stack dyna
 - **Backend:** Node.js, Express
 - **Database:** SQLite via `@libsql/client` (local file or Turso cloud)
 
+## 2026 differentiator features implemented
+
+- Audience Mode Toggle (`Recruiter`, `Engineering Manager`, `Founder`)
+- Claim → Evidence Graph for project credibility
+- Decision Timeline for trade-off storytelling
+- Failure Vault / Postmortems section
+- Interactive Architecture Playground (scale/security/budget simulation)
+- AI Interview Simulator trained from portfolio content
+- Private Recruiter Room with shareable curated link
+- Live Trust Panel with runtime/API/safety telemetry
+- Machine-readable Resume API + JSON-LD schema markup
+- 30/60/90-Day Value Plan generator
+
 ## Project structure
 
 - `frontend/` → React app
@@ -112,6 +125,10 @@ Required environment variables in Render:
 - `SMTP_USER`
 - `SMTP_PASS`
 - `SMTP_FROM` (optional)
+- `APP_BUILD_SHA` (optional trust-panel metadata)
+- `APP_BUILD_TIME` (optional trust-panel metadata)
+- `APP_TEST_STATUS` (optional trust-panel metadata)
+- `APP_LIGHTHOUSE_SCORE` (optional trust-panel metadata)
 
 How to apply it:
 
@@ -126,6 +143,8 @@ If you keep an existing Render service created manually, make sure its settings 
 
 - `GET /api/health` → health check
 - `GET /api/portfolio` → profile + experiences + projects
+- `GET /api/portfolio/resume-json` → machine-readable resume payload + JSON-LD object
+- `GET /api/portfolio/trust-panel` → live trust telemetry (API/DB/inbox/quality/safety)
 - `POST /api/contact` → save contact message to DB and send email notification
 - `POST /api/auth/login` → admin login (JWT)
 - `GET /api/auth/recovery-status` → returns whether recovery key is configured

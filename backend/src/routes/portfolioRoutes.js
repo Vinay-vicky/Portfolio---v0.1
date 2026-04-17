@@ -9,6 +9,8 @@ import {
 	deleteProject,
 	deleteSkill,
 	getPortfolioData,
+	getResumeJson,
+	getTrustPanel,
 	updateEducation,
 	updateExperience,
 	updateProfile,
@@ -20,6 +22,8 @@ import { authenticateAdmin } from "../middleware/authMiddleware.js";
 const router = Router();
 
 router.get("/", getPortfolioData);
+router.get("/resume-json", getResumeJson);
+router.get("/trust-panel", getTrustPanel);
 
 router.put("/profile", authenticateAdmin, updateProfile);
 
