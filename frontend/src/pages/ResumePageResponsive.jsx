@@ -25,9 +25,73 @@ function ResumePageResponsive() {
 
   if (loading && experiences.length === 0 && education.length === 0) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-500" />
-      </div>
+      <section ref={sectionRef} className="space-y-8 sm:space-y-10">
+        <div className="section-shell animate-pulse space-y-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-3">
+              <div className="h-8 w-36 rounded-full bg-slate-200/80" />
+              <div className="h-4 w-72 rounded-full bg-slate-200/60" />
+            </div>
+            <div className="h-11 w-40 rounded-full bg-slate-200/70" />
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={`resume-metric-${index}`} className="stat-tile space-y-3">
+              <div className="h-3 w-28 rounded-full bg-slate-200/80" />
+              <div className="h-8 w-16 rounded-full bg-slate-200/70" />
+            </div>
+          ))}
+        </div>
+
+        <div className="grid gap-8 xl:grid-cols-2 xl:gap-7">
+          <div className="space-y-5">
+            <div className="h-8 w-40 rounded-full bg-slate-200/80" />
+            <div className="space-y-4">
+              {Array.from({ length: 2 }).map((_, index) => (
+                <div key={`resume-experience-${index}`} className="modern-panel space-y-3">
+                  <div className="h-5 w-40 rounded-full bg-slate-200/80" />
+                  <div className="h-4 w-28 rounded-full bg-slate-200/70" />
+                  <div className="h-4 w-full rounded-full bg-slate-200/70" />
+                  <div className="h-4 w-5/6 rounded-full bg-slate-200/70" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-5">
+            <div className="h-8 w-40 rounded-full bg-slate-200/80" />
+            <div className="space-y-4">
+              {Array.from({ length: 2 }).map((_, index) => (
+                <div key={`resume-education-${index}`} className="modern-panel space-y-3">
+                  <div className="h-5 w-44 rounded-full bg-slate-200/80" />
+                  <div className="h-4 w-32 rounded-full bg-slate-200/70" />
+                  <div className="h-4 w-full rounded-full bg-slate-200/70" />
+                  <div className="h-4 w-5/6 rounded-full bg-slate-200/70" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          <div className="h-8 w-28 rounded-full bg-slate-200/80" />
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={`resume-skills-${index}`} className="section-shell-muted space-y-3 animate-pulse">
+                <div className="h-5 w-36 rounded-full bg-slate-200/80" />
+                <div className="h-2 w-full rounded-full bg-slate-200/70" />
+                <div className="flex flex-wrap gap-2">
+                  <div className="h-7 w-20 rounded-full bg-slate-200/70" />
+                  <div className="h-7 w-24 rounded-full bg-slate-200/60" />
+                  <div className="h-7 w-16 rounded-full bg-slate-200/60" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     )
   }
 
