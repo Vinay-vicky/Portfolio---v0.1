@@ -249,23 +249,46 @@ function AdminDashboard() {
 
   if (loading && !profile) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-500"></div>
+      <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+        <aside className="section-shell-muted animate-pulse space-y-4">
+          <div className="h-8 w-40 rounded-full bg-slate-200/80" />
+          <div className="h-20 rounded-[1.5rem] bg-slate-200/70" />
+          <div className="grid grid-cols-2 gap-2">
+            <div className="h-12 rounded-2xl bg-slate-200/70" />
+            <div className="h-12 rounded-2xl bg-slate-200/70" />
+            <div className="h-12 rounded-2xl bg-slate-200/70" />
+            <div className="h-12 rounded-2xl bg-slate-200/70" />
+          </div>
+        </aside>
+        <div className="section-shell animate-pulse min-h-[560px] space-y-4">
+          <div className="h-8 w-56 rounded-full bg-slate-200/80" />
+          <div className="h-4 w-80 rounded-full bg-slate-200/70" />
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="h-40 rounded-[1.5rem] bg-slate-200/70" />
+            <div className="h-40 rounded-[1.5rem] bg-slate-200/60" />
+            <div className="h-40 rounded-[1.5rem] bg-slate-200/60" />
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+    <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
       {/* Sidebar */}
       <aside className="w-full space-y-4">
-        <div className="glass-card !p-4 sm:!p-5 lg:sticky lg:top-24">
+        <div className="section-shell-muted !p-4 sm:!p-5 lg:sticky lg:top-24">
           <div className="mb-4 flex items-center gap-3 border-b border-slate-200 pb-4">
-            <LayoutDashboard className="text-blue-700" />
-            <h2 className="text-lg font-black text-slate-900">Admin CMS</h2>
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 via-cyan-500 to-violet-600 text-white shadow-[0_10px_24px_rgba(37,99,235,0.24)]">
+              <LayoutDashboard size={18} />
+            </span>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Admin CMS</p>
+              <h2 className="text-lg font-black text-slate-900">Portfolio controls</h2>
+            </div>
           </div>
 
-          <div className={`mb-4 rounded-lg border px-3 py-2.5 ${smtpReadinessStyles}`}>
+          <div className={`mb-4 rounded-2xl border px-3 py-2.5 shadow-sm ${smtpReadinessStyles}`}>
             <div className="flex items-center justify-between gap-2">
               <span className="text-[11px] font-bold uppercase tracking-wide">SMTP status</span>
               <span className="inline-flex items-center gap-1 text-xs font-semibold">
@@ -334,7 +357,7 @@ function AdminDashboard() {
             <button
               onClick={handleSmtpTest}
               disabled={smtpStatus.type === 'loading'}
-              className="mb-3 w-full rounded-lg border border-blue-200 bg-blue-50 px-3 py-2.5 text-left text-sm font-semibold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-70"
+              className="mb-3 w-full rounded-2xl border border-blue-200 bg-blue-50 px-3 py-2.5 text-left text-sm font-semibold text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-70"
             >
               <span className="inline-flex items-center gap-2">
                 {smtpStatus.type === 'loading' ? (
@@ -363,7 +386,7 @@ function AdminDashboard() {
 
             <button
               onClick={handleLogout}
-              className="w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50"
+              className="w-full rounded-2xl px-3 py-2.5 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50"
             >
               <span className="inline-flex items-center gap-3">
                 <LogOut size={18} />
@@ -376,7 +399,7 @@ function AdminDashboard() {
 
       {/* Main Content */}
       <div className="flex-1 min-w-0">
-        <div className="glass-card min-h-[560px] !p-0">
+        <div className="section-shell min-h-[560px] !p-0">
           {error && <div className="m-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">{error}</div>}
           {renderContent()}
         </div>

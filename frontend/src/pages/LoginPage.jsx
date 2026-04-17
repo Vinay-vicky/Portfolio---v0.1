@@ -155,8 +155,8 @@ function LoginPage() {
   }
 
   return (
-    <div ref={container} className="flex min-h-[70vh] items-center justify-center p-4">
-      <div className="login-card w-full max-w-4xl overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.12)]">
+    <div ref={container} className="flex min-h-[80vh] items-center justify-center p-4">
+      <div className="login-card w-full max-w-5xl overflow-hidden section-shell">
         <div className="grid md:grid-cols-[0.9fr_1.1fr]">
           <aside className="relative hidden overflow-hidden bg-gradient-to-br from-blue-700 via-cyan-600 to-violet-600 p-8 text-white md:block">
             <div className="pointer-events-none absolute -right-14 -top-16 h-52 w-52 rounded-full bg-white/15 blur-2xl" />
@@ -202,14 +202,14 @@ function LoginPage() {
 
           <div className="p-6 sm:p-8">
             <div className="mb-8 text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-700 sm:h-16 sm:w-16">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 text-blue-700 shadow-[0_10px_24px_rgba(59,130,246,0.12)] sm:h-16 sm:w-16">
                 <ShieldAlert size={30} />
               </div>
               <h1 className="text-2xl font-black text-slate-900">Admin Access</h1>
               <p className="mt-2 text-sm text-slate-600">Sign in to manage your portfolio</p>
 
               <div
-                className={`mt-3 rounded-lg border px-3 py-2 text-left text-xs ${
+                className={`mt-3 rounded-2xl border px-3 py-2 text-left text-xs shadow-sm ${
                   recoveryStatus.loading
                     ? 'border-blue-200 bg-blue-50 text-blue-700'
                     : recoveryStatus.recoveryEnabled
@@ -239,7 +239,7 @@ function LoginPage() {
                   <button
                     type="button"
                     onClick={copyRecoveryChecklist}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-100"
                   >
                     <Copy size={12} />
                     Copy recovery checklist
@@ -248,7 +248,7 @@ function LoginPage() {
                   <button
                     type="button"
                     onClick={downloadRecoveryChecklist}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-100"
                   >
                     <Download size={12} />
                     Download .txt checklist
@@ -274,7 +274,7 @@ function LoginPage() {
                     id="username"
                     type="text"
                     required
-                    className="w-full rounded-xl border border-slate-300 bg-white p-3 pl-10 text-slate-800 placeholder-slate-400 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    className="soft-input pl-10"
                     placeholder="admin"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -292,7 +292,7 @@ function LoginPage() {
                     id="password"
                     type="password"
                     required
-                    className="w-full rounded-xl border border-slate-300 bg-white p-3 pl-10 text-slate-800 placeholder-slate-400 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    className="soft-input pl-10"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -310,7 +310,7 @@ function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-500 disabled:pointer-events-none disabled:opacity-70"
+                  className="btn-primary w-full disabled:pointer-events-none disabled:opacity-70"
                 >
                   {loading ? (
                     <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>

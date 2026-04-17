@@ -1,4 +1,4 @@
-simport usePortfolioData from '../features/portfolio/usePortfolioData'
+import usePortfolioData from '../features/portfolio/usePortfolioData'
 import { getAssetUrl } from '../features/portfolio/portfolioApi'
 import { Briefcase, Download, GraduationCap, Sparkles } from 'lucide-react'
 
@@ -13,9 +13,50 @@ function ResumePage() {
 
   if (loading && experiences.length === 0 && education.length === 0) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-500" />
-      </div>
+      <section className="space-y-10 sm:space-y-12">
+        <div className="section-shell animate-pulse space-y-4">
+          <div className="h-8 w-36 rounded-full bg-slate-200/80" />
+          <div className="h-4 w-80 rounded-full bg-slate-200/70" />
+          <div className="h-11 w-40 rounded-full bg-slate-200/70" />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={`resume-skeleton-${index}`} className="glass-card space-y-3">
+              <div className="h-4 w-24 rounded-full bg-slate-200/80" />
+              <div className="h-7 w-32 rounded-full bg-slate-200/70" />
+              <div className="h-4 w-20 rounded-full bg-slate-200/70" />
+            </div>
+          ))}
+        </div>
+
+        <div className="grid gap-8 xl:grid-cols-2">
+          <div className="space-y-4">
+            <div className="h-8 w-40 rounded-full bg-slate-200/80" />
+            <div className="space-y-4">
+              <div className="glass-card space-y-3">
+                <div className="h-4 w-36 rounded-full bg-slate-200/80" />
+                <div className="h-5 w-3/5 rounded-full bg-slate-200/70" />
+                <div className="h-4 w-full rounded-full bg-slate-200/70" />
+                <div className="h-4 w-5/6 rounded-full bg-slate-200/70" />
+              </div>
+              <div className="glass-card space-y-3">
+                <div className="h-4 w-32 rounded-full bg-slate-200/80" />
+                <div className="h-5 w-3/4 rounded-full bg-slate-200/70" />
+                <div className="h-4 w-full rounded-full bg-slate-200/70" />
+              </div>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div className="h-8 w-40 rounded-full bg-slate-200/80" />
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="glass-card h-24" />
+              <div className="glass-card h-24" />
+              <div className="glass-card h-24" />
+            </div>
+          </div>
+        </div>
+      </section>
     )
   }
 

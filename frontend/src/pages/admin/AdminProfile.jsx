@@ -50,20 +50,23 @@ function AdminProfile({ profile, onUpdated }) {
   ]
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold text-white mb-6 pb-4 border-b border-white/10">Profile Settings</h2>
+    <div className="space-y-6 p-6">
+      <div className="section-shell-muted">
+        <p className="section-eyebrow border-cyan-200 bg-cyan-50 text-cyan-700">Profile editor</p>
+        <h2 className="mt-3 text-2xl font-black text-slate-900">Profile Settings</h2>
+      </div>
       
       {message && (
-        <div className={`mb-6 p-4 rounded-lg border ${message.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+        <div className={`surface-card ${message.type === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-red-200 bg-red-50 text-red-700'}`}>
           {message.text}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="section-shell-muted space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {fields.map(field => (
             <div key={field.name} className="space-y-2">
-              <label htmlFor={field.name} className="text-sm font-medium text-slate-300">
+              <label htmlFor={field.name} className="text-sm font-medium text-slate-600">
                 {field.label}
               </label>
               <input
@@ -72,45 +75,45 @@ function AdminProfile({ profile, onUpdated }) {
                 type={field.type}
                 value={formData[field.name] || ''}
                 onChange={handleChange}
-                className="w-full rounded-xl border border-white/10 bg-slate-900/50 p-2.5 text-white placeholder-slate-500 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+                className="soft-input"
               />
             </div>
           ))}
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="about_intro" className="text-sm font-medium text-slate-300">About Intro (Greeting)</label>
+          <label htmlFor="about_intro" className="text-sm font-medium text-slate-600">About Intro (Greeting)</label>
           <textarea
             id="about_intro"
             name="about_intro"
             rows={2}
             value={formData.about_intro || ''}
             onChange={handleChange}
-            className="w-full rounded-xl border border-white/10 bg-slate-900/50 p-3 text-white placeholder-slate-500 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+            className="soft-input min-h-[96px]"
           />
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="bio" className="text-sm font-medium text-slate-300">Short Bio</label>
+          <label htmlFor="bio" className="text-sm font-medium text-slate-600">Short Bio</label>
           <textarea
             id="bio"
             name="bio"
             rows={3}
             value={formData.bio || ''}
             onChange={handleChange}
-            className="w-full rounded-xl border border-white/10 bg-slate-900/50 p-3 text-white placeholder-slate-500 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+            className="soft-input min-h-[120px]"
           />
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="about_text" className="text-sm font-medium text-slate-300">Detailed About Text (Home & Resume Page)</label>
+          <label htmlFor="about_text" className="text-sm font-medium text-slate-600">Detailed About Text (Home & Resume Page)</label>
           <textarea
             id="about_text"
             name="about_text"
             rows={5}
             value={formData.about_text || ''}
             onChange={handleChange}
-            className="w-full rounded-xl border border-white/10 bg-slate-900/50 p-3 text-white placeholder-slate-500 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+            className="soft-input min-h-[160px]"
           />
         </div>
 
@@ -118,7 +121,7 @@ function AdminProfile({ profile, onUpdated }) {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 font-semibold text-white shadow-lg transition-colors hover:bg-indigo-500 disabled:opacity-70 disabled:pointer-events-none"
+            className="btn-primary flex items-center gap-2 disabled:opacity-70 disabled:pointer-events-none"
           >
             {saving ? (
               <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>

@@ -172,10 +172,11 @@ function AdminMessages({ onUnreadCountChange }) {
   ]
 
   return (
-    <div className="p-6">
-      <div className="mb-6 flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-6 p-6">
+      <div className="section-shell-muted flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-black text-slate-900">Contact Inbox</h2>
+          <p className="section-eyebrow border-cyan-200 bg-cyan-50 text-cyan-700">Inbox</p>
+          <h2 className="mt-3 text-2xl font-black text-slate-900">Contact Inbox</h2>
           <p className="mt-1 text-sm text-slate-500">{messageCountLabel}</p>
         </div>
 
@@ -185,14 +186,14 @@ function AdminMessages({ onUnreadCountChange }) {
             setLoading(true)
             fetchMessages({ searchText: appliedQuery, pageNumber: page })
           }}
-          className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+          className="btn-secondary inline-flex min-h-[42px] items-center justify-center gap-2"
         >
           <RefreshCw size={14} />
           Refresh
         </button>
       </div>
 
-      <div className="mb-4 grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="section-shell-muted grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label className="flex flex-col gap-1 text-xs font-semibold text-slate-500">
           Sort by
           <select
@@ -226,18 +227,18 @@ function AdminMessages({ onUnreadCountChange }) {
           </select>
         </label>
 
-        <div className="rounded-lg border border-slate-200 bg-white px-3 py-2">
+        <div className="surface-card">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Page</p>
           <p className="mt-1 text-sm font-bold text-slate-800">{pagination.page} / {pagination.totalPages}</p>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-white px-3 py-2">
+        <div className="surface-card">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Total matched</p>
           <p className="mt-1 text-sm font-bold text-slate-800">{pagination.totalItems}</p>
         </div>
       </div>
 
-      <div className="mb-5 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
         {statusTabs.map((tab) => {
           const active = statusFilter === tab.id
           return (
@@ -264,14 +265,14 @@ function AdminMessages({ onUnreadCountChange }) {
           type="button"
           onClick={handleMarkAllRead}
           disabled={markingAllRead || stats.unread === 0}
-          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-70 sm:text-sm"
+          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:-translate-y-0.5 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-70 sm:text-sm"
         >
           <CheckCheck size={14} />
           {markingAllRead ? 'Marking…' : 'Mark all unread as read'}
         </button>
       </div>
 
-      <form onSubmit={handleSearchSubmit} className="mb-5 flex flex-col gap-3 sm:flex-row">
+      <form onSubmit={handleSearchSubmit} className="section-shell-muted flex flex-col gap-3 sm:flex-row">
         <label className="relative block flex-1">
           <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -313,8 +314,20 @@ function AdminMessages({ onUnreadCountChange }) {
       ) : null}
 
       {loading ? (
-        <div className="flex min-h-[200px] items-center justify-center">
-          <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-500" />
+        <div className="grid gap-4 animate-pulse">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <article key={`message-skeleton-${index}`} className="surface-card space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className="space-y-2">
+                  <div className="h-4 w-40 rounded-full bg-slate-200/80" />
+                  <div className="h-3 w-28 rounded-full bg-slate-200/70" />
+                </div>
+                <div className="h-8 w-40 rounded-full bg-slate-200/70" />
+              </div>
+              <div className="h-4 w-3/4 rounded-full bg-slate-200/70" />
+              <div className="h-20 rounded-2xl bg-slate-200/70" />
+            </article>
+          ))}
         </div>
       ) : null}
 
@@ -334,7 +347,7 @@ function AdminMessages({ onUnreadCountChange }) {
             const status = message.status || 'unread'
 
             return (
-              <article key={message.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/60">
+              <article key={message.id} className="surface-card">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <h3 className="text-base font-black text-slate-900">{message.name}</h3>
@@ -349,7 +362,7 @@ function AdminMessages({ onUnreadCountChange }) {
                   <div className="flex flex-wrap items-center gap-2">
                     <a
                       href={`mailto:${message.email}?subject=${encodeURIComponent(`Re: ${subjectText}`)}`}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 transition hover:bg-blue-100"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-100"
                     >
                       <Reply size={13} />
                       Reply
@@ -360,7 +373,7 @@ function AdminMessages({ onUnreadCountChange }) {
                         type="button"
                         onClick={() => handleStatusUpdate(message.id, 'read')}
                         disabled={updatingId === message.id}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-70"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:-translate-y-0.5 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-70"
                       >
                         <CheckCheck size={13} />
                         Mark read
@@ -370,7 +383,7 @@ function AdminMessages({ onUnreadCountChange }) {
                         type="button"
                         onClick={() => handleStatusUpdate(message.id, 'unread')}
                         disabled={updatingId === message.id}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-xs font-semibold text-cyan-700 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-70"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-xs font-semibold text-cyan-700 transition hover:-translate-y-0.5 hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-70"
                       >
                         <Undo2 size={13} />
                         Mark unread
@@ -382,7 +395,7 @@ function AdminMessages({ onUnreadCountChange }) {
                         type="button"
                         onClick={() => handleStatusUpdate(message.id, 'archived')}
                         disabled={updatingId === message.id}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 transition hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-70"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 transition hover:-translate-y-0.5 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-70"
                       >
                         <Archive size={13} />
                         Archive
@@ -392,7 +405,7 @@ function AdminMessages({ onUnreadCountChange }) {
                         type="button"
                         onClick={() => handleStatusUpdate(message.id, 'read')}
                         disabled={updatingId === message.id}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-70"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:-translate-y-0.5 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-70"
                       >
                         <Undo2 size={13} />
                         Restore
@@ -403,7 +416,7 @@ function AdminMessages({ onUnreadCountChange }) {
                       type="button"
                       onClick={() => handleDeleteMessage(message.id)}
                       disabled={deletingId === message.id || updatingId === message.id}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:-translate-y-0.5 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       <Trash2 size={13} />
                       {deletingId === message.id ? 'Deleting...' : 'Delete'}
@@ -427,7 +440,7 @@ function AdminMessages({ onUnreadCountChange }) {
             )
           })}
 
-          <div className="mt-4 flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-4 flex flex-col gap-3 rounded-[1.5rem] border border-slate-200 bg-white/85 p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs font-semibold text-slate-600">
               Showing page {pagination.page} of {pagination.totalPages}
             </p>
@@ -437,7 +450,7 @@ function AdminMessages({ onUnreadCountChange }) {
                 type="button"
                 onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                 disabled={!pagination.hasPreviousPage || loading}
-                className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <ChevronLeft size={13} />
                 Previous
@@ -447,7 +460,7 @@ function AdminMessages({ onUnreadCountChange }) {
                 type="button"
                 onClick={() => setPage((prev) => prev + 1)}
                 disabled={!pagination.hasNextPage || loading}
-                className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 Next
                 <ChevronRight size={13} />

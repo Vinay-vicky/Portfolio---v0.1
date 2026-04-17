@@ -62,27 +62,71 @@ function ContactPage() {
     },
   ]
 
+  if (contactStatus === 'loading' && !profile) {
+    return (
+      <section className="space-y-8 sm:space-y-10">
+        <div className="section-shell animate-pulse space-y-5">
+          <div className="mx-auto h-12 w-12 rounded-full bg-slate-200/80" />
+          <div className="mx-auto h-8 w-52 rounded-full bg-slate-200/80" />
+          <div className="mx-auto h-4 w-80 max-w-full rounded-full bg-slate-200/60" />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+          <div className="section-shell-muted animate-pulse space-y-4">
+            <div className="h-8 w-40 rounded-full bg-slate-200/80" />
+            <div className="h-6 w-3/4 rounded-full bg-slate-200/70" />
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              <div className="h-20 rounded-[1.5rem] bg-slate-200/70" />
+              <div className="h-20 rounded-[1.5rem] bg-slate-200/60" />
+              <div className="h-20 rounded-[1.5rem] bg-slate-200/60" />
+              <div className="h-20 rounded-[1.5rem] bg-slate-200/70" />
+            </div>
+          </div>
+
+          <div className="section-shell animate-pulse space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="h-12 rounded-2xl bg-slate-200/70" />
+              <div className="h-12 rounded-2xl bg-slate-200/70" />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="h-12 rounded-2xl bg-slate-200/70" />
+              <div className="h-12 rounded-2xl bg-slate-200/70" />
+            </div>
+            <div className="h-36 rounded-2xl bg-slate-200/70" />
+            <div className="h-12 w-40 rounded-full bg-slate-200/80" />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
-    <section ref={sectionRef} className="mx-auto space-y-6">
-      <div className="section-shell text-center" data-animate-intro>
-        <div className="bg-gradient-primary-to-secondary mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full text-lg text-white shadow-md shadow-blue-200">
+    <section ref={sectionRef} className="space-y-8 sm:space-y-10">
+      <div className="section-shell overflow-hidden text-center" data-animate-intro>
+        <div className="bg-gradient-primary-to-secondary mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl text-lg text-white shadow-[0_12px_28px_rgba(37,99,235,0.22)]">
           <SendHorizontal size={18} />
         </div>
-        <h1 className="section-title text-slate-900">Get in touch</h1>
-        <p className="mt-2 text-sm text-slate-600 sm:text-base">Let&apos;s work together! Every message is stored in the inbox and routed to your configured email.</p>
+        <p className="section-eyebrow border-blue-200 bg-blue-50 text-blue-700">
+          <SendHorizontal size={12} />
+          Direct contact
+        </p>
+        <h1 className="section-title mt-4 text-slate-900">Get in touch</h1>
+        <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600 sm:text-base">
+          Let&apos;s work together! Every message is stored in the inbox and routed to your configured email.
+        </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <aside className="section-shell-muted" data-animate-reveal>
+      <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+        <aside className="section-shell-muted space-y-5" data-animate-reveal>
           <p className="section-eyebrow border-blue-200 bg-blue-50 text-blue-700">Contact details</p>
           <h2 className="mt-3 text-2xl font-black text-slate-900">Let&apos;s discuss your next build</h2>
           <p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
             Share your idea, timeline, and expectations. I&apos;ll reply with a practical plan and execution approach.
           </p>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
             {contactHighlights.map(({ label, value, icon: Icon }) => (
-              <article key={label} className="rounded-xl border border-slate-200 bg-white p-3">
+              <article key={label} className="surface-card">
                 <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <Icon size={13} className="text-blue-600" />
                   {label}
@@ -92,7 +136,7 @@ function ContactPage() {
             ))}
           </div>
 
-          <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
+          <div className="surface-card">
             <p className="text-xs font-bold uppercase tracking-wide text-slate-500">How it works</p>
             <ul className="mt-3 space-y-2 text-sm text-slate-600">
               <li className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-blue-500" />Submit your message and requirements</li>
@@ -102,7 +146,7 @@ function ContactPage() {
           </div>
         </aside>
 
-        <form className="section-shell space-y-4" onSubmit={handleSubmit} aria-busy={contactStatus === 'loading'} data-animate-reveal>
+        <form className="section-shell space-y-5" onSubmit={handleSubmit} aria-busy={contactStatus === 'loading'} data-animate-reveal>
           <div className="grid gap-4 sm:grid-cols-2">
             <input className="soft-input" name="name" value={form.name} onChange={handleChange} placeholder="Full name" required />
             <input className="soft-input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="Email" required />
