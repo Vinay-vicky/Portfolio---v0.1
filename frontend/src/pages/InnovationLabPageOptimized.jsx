@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import {
   ExternalLink,
@@ -131,10 +131,61 @@ const buildArchitecturePlan = ({ scale, security, budget }) => {
   }
 }
 
+function InnovationLabLoadingSkeleton() {
+  return (
+    <div className="section-shell-muted space-y-5 animate-pulse" aria-label="Loading innovation lab content" role="status">
+      <div className="space-y-3">
+        <div className="h-3 w-32 rounded-full bg-slate-200" />
+        <div className="h-8 w-3/5 rounded-2xl bg-slate-200" />
+        <div className="h-4 w-full max-w-3xl rounded-full bg-slate-200/80" />
+        <div className="h-4 w-4/5 rounded-full bg-slate-200/80" />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-slate-100 p-4">
+          <div className="h-3 w-28 rounded-full bg-slate-200" />
+          <div className="mt-4 space-y-3">
+            <div className="h-24 rounded-2xl bg-slate-200/90" />
+            <div className="grid gap-2 sm:grid-cols-3">
+              <div className="h-16 rounded-xl bg-slate-200/80" />
+              <div className="h-16 rounded-xl bg-slate-200/80" />
+              <div className="h-16 rounded-xl bg-slate-200/80" />
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-slate-100 p-4">
+          <div className="h-3 w-36 rounded-full bg-slate-200" />
+          <div className="mt-4 space-y-3">
+            <div className="h-10 rounded-xl bg-slate-200/90" />
+            <div className="h-10 rounded-xl bg-slate-200/90" />
+            <div className="h-10 rounded-xl bg-slate-200/90" />
+            <div className="h-10 rounded-xl bg-slate-200/90" />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-slate-100 p-4">
+          <div className="h-3 w-32 rounded-full bg-slate-200" />
+          <div className="mt-4 h-32 rounded-2xl bg-slate-200/90" />
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-slate-100 p-4">
+          <div className="h-3 w-40 rounded-full bg-slate-200" />
+          <div className="mt-4 h-32 rounded-2xl bg-slate-200/90" />
+        </div>
+      </div>
+
+      <span className="sr-only">Loading Innovation Lab panels...</span>
+    </div>
+  )
+}
+
 function InnovationLabPageOptimized() {
   const sectionRef = usePageReveal()
   const { profile, projects, skills } = usePortfolioData()
   const [searchParams, setSearchParams] = useSearchParams()
+  const advancedPanelsPrefetchedRef = useRef(false)
 
   const audienceFromQuery = String(searchParams.get('audience') || '').toLowerCase()
   const defaultAudience = audienceModes.some((item) => item.id === audienceFromQuery) ? audienceFromQuery : 'recruiter'
@@ -237,6 +288,31 @@ function InnovationLabPageOptimized() {
 
     return () => {
       active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    if (advancedPanelsPrefetchedRef.current) return
+    advancedPanelsPrefetchedRef.current = true
+
+    const warmAdvancedPanels = () => {
+      import('../components/innovation/InnovationLabAdvancedPanels').catch(() => {
+        advancedPanelsPrefetchedRef.current = false
+      })
+    }
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(warmAdvancedPanels, { timeout: 1400 })
+      return () => {
+        if (typeof window.cancelIdleCallback === 'function') {
+          window.cancelIdleCallback(idleId)
+        }
+      }
+    }
+
+    const timeoutId = window.setTimeout(warmAdvancedPanels, 120)
+    return () => {
+      window.clearTimeout(timeoutId)
     }
   }, [])
 
@@ -849,9 +925,7 @@ function InnovationLabPageOptimized() {
       </article>
 
       <Suspense fallback={(
-        <div className="section-shell-muted flex min-h-[28rem] items-center justify-center">
-          <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-500" />
-        </div>
+        <InnovationLabLoadingSkeleton />
       )}>
         <InnovationLabAdvancedPanels
           interviewRoles={interviewRoles}
