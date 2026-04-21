@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
-    chunkSizeWarningLimit: 650,
+    chunkSizeWarningLimit: 1300,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -23,6 +23,10 @@ export default defineConfig({
 
           if (id.includes('gsap')) {
             return 'vendor-animations'
+          }
+
+          if (id.includes('whs') || id.includes('three')) {
+            return 'vendor-3d'
           }
 
           if (id.includes('lucide-react') || id.includes('react-icons')) {

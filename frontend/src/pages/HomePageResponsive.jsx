@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { FaFacebook, FaGithub, FaInstagram, FaLinkedin } from 'react-icons/fa'
 import usePageReveal from '../hooks/usePageReveal'
+import WhsHeroScene from '../components/home/WhsHeroScene'
 
 const socialConfig = [
   {
@@ -224,27 +225,27 @@ function HomePageResponsive() {
             </div>
 
             <div className="mt-6 flex flex-wrap gap-2.5" data-animate-reveal>
-              {featurePills.map(({ label, icon: Icon }) => (
-                <span key={label} className="feature-chip">
-                  <Icon size={13} className="text-blue-600" />
-                  {label}
+              {featurePills.map((pill) => (
+                <span key={pill.label} className="feature-chip">
+                  <pill.icon size={13} className="text-blue-600" />
+                  {pill.label}
                 </span>
               ))}
             </div>
 
             <div className="mt-7 grid gap-3 sm:grid-cols-3">
-              {heroMetrics.map(({ label, value, note, icon: Icon, accent }) => (
-                <article key={label} className="metric-card" data-animate-reveal>
-                  <div className={`inline-flex h-9 w-9 items-center justify-center rounded-2xl border ${accent}`}>
-                    <Icon size={15} />
+              {heroMetrics.map((metric) => (
+                <article key={metric.label} className="metric-card" data-animate-reveal>
+                  <div className={`inline-flex h-9 w-9 items-center justify-center rounded-2xl border ${metric.accent}`}>
+                    <metric.icon size={15} />
                   </div>
                   <div className="mt-4 flex items-end justify-between gap-3">
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-                      <p className="mt-2 text-3xl font-black text-slate-900">{value}</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">{metric.label}</p>
+                      <p className="mt-2 text-3xl font-black text-slate-900">{metric.value}</p>
                     </div>
                   </div>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-500 sm:text-sm">{note}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-slate-500 sm:text-sm">{metric.note}</p>
                 </article>
               ))}
             </div>
@@ -264,33 +265,45 @@ function HomePageResponsive() {
                 </span>
               </div>
 
-              <div className="relative mt-4 overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-slate-100 shadow-inner">
-                {profile?.profile_image_url ? (
-                  <img
-                    src={getAssetUrl(profile.profile_image_url)}
-                    alt={profile.full_name}
-                    className="relative z-10 h-auto w-full object-cover"
-                  />
-                ) : (
-                  <div className="relative z-10 flex aspect-[4/5] items-center justify-center bg-gradient-to-br from-blue-100 via-cyan-100 to-violet-100 text-sm font-semibold text-slate-600">
-                    Profile image preview
-                  </div>
-                )}
+              <div className="relative mt-4 overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-slate-950/90 shadow-inner">
+                <WhsHeroScene className="absolute inset-0" />
 
-                <div className="absolute bottom-4 left-4 right-4 z-20 rounded-3xl border border-white/70 bg-slate-950/75 p-4 text-white shadow-2xl backdrop-blur-xl">
+                <div className="relative z-10 flex min-h-[360px] flex-col justify-between p-4 sm:p-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200">Current focus</p>
-                      <p className="mt-1 text-sm font-semibold sm:text-base">{profile?.role || 'Full Stack Developer'}</p>
-                    </div>
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white/90">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-cyan-100 backdrop-blur-md">
                       <Sparkles size={12} />
-                      Modern UI
+                      WhitestormJS 3D motion
+                    </span>
+
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md">
+                      <Layers3 size={12} className="text-cyan-200" />
+                      Real-time canvas
                     </span>
                   </div>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-300 sm:text-sm">
-                    Building fast, polished interfaces with clean APIs, motion-aware details, and a recruiter-friendly story.
-                  </p>
+
+                  <div className="grid gap-3 sm:grid-cols-[auto_1fr] sm:items-end">
+                    <div className="overflow-hidden rounded-3xl border border-white/15 bg-slate-950/50 p-2 shadow-[0_18px_40px_rgba(2,6,23,0.35)] backdrop-blur-md">
+                      {profile?.profile_image_url ? (
+                        <img
+                          src={getAssetUrl(profile.profile_image_url)}
+                          alt={profile.full_name}
+                          className="h-24 w-24 rounded-2xl object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-cyan-500 to-violet-500 text-lg font-black text-white">
+                          VR
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="rounded-3xl border border-white/15 bg-white/10 p-4 text-white shadow-[0_18px_40px_rgba(2,6,23,0.28)] backdrop-blur-md">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200">Current focus</p>
+                      <p className="mt-1 text-sm font-semibold sm:text-base">{profile?.role || 'Full Stack Developer'}</p>
+                      <p className="mt-2 text-xs leading-relaxed text-slate-200 sm:text-sm">
+                        Building fast, polished interfaces with clean APIs, motion-aware details, and a recruiter-friendly story.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -376,21 +389,21 @@ function HomePageResponsive() {
           <div className="mt-5 soft-divider" />
 
           <div className="mt-5 flex flex-wrap gap-2.5">
-            {socialConfig.map(({ key, label, icon: Icon, className }) => {
-              const url = profile?.[key]
+            {socialConfig.map((social) => {
+              const url = profile?.[social.key]
               if (!url) return null
 
               return (
                 <a
-                  key={key}
+                  key={social.key}
                   data-animate-reveal
-                  className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold shadow-sm transition hover:-translate-y-0.5 sm:text-sm ${className}`}
+                  className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold shadow-sm transition hover:-translate-y-0.5 sm:text-sm ${social.className}`}
                   href={url}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <Icon size={14} />
-                  {label}
+                  <social.icon size={14} />
+                  {social.label}
                 </a>
               )
             })}
