@@ -268,7 +268,7 @@ function HomePageResponsive() {
               <div className="relative mt-4 overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-slate-950/90 shadow-inner">
                 <WhsHeroScene className="absolute inset-0" />
 
-                <div className="relative z-10 flex min-h-[360px] flex-col justify-between p-4 sm:p-5">
+                <div className="relative z-10 flex min-h-[332px] flex-col gap-3 p-3 sm:min-h-[360px] sm:justify-between sm:p-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-cyan-100 backdrop-blur-md">
                       <Sparkles size={12} />
@@ -282,21 +282,21 @@ function HomePageResponsive() {
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-[auto_1fr] sm:items-end">
-                    <div className="overflow-hidden rounded-3xl border border-white/15 bg-slate-950/50 p-2 shadow-[0_18px_40px_rgba(2,6,23,0.35)] backdrop-blur-md">
+                    <div className="mx-auto aspect-[4/5] w-full max-w-[10.5rem] overflow-hidden rounded-3xl border border-white/15 bg-slate-950/50 p-2 shadow-[0_18px_40px_rgba(2,6,23,0.35)] backdrop-blur-md sm:mx-0 sm:aspect-square sm:max-w-[8rem]">
                       {profile?.profile_image_url ? (
                         <img
                           src={getAssetUrl(profile.profile_image_url)}
                           alt={profile.full_name}
-                          className="h-24 w-24 rounded-2xl object-cover"
+                          className="h-full w-full rounded-2xl object-cover object-center"
                         />
                       ) : (
-                        <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-cyan-500 to-violet-500 text-lg font-black text-white">
+                        <div className="flex h-full w-full items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-cyan-500 to-violet-500 text-3xl font-black text-white">
                           VR
                         </div>
                       )}
                     </div>
 
-                    <div className="rounded-3xl border border-white/15 bg-white/10 p-4 text-white shadow-[0_18px_40px_rgba(2,6,23,0.28)] backdrop-blur-md">
+                    <div className="w-full rounded-3xl border border-white/15 bg-white/10 p-4 text-white shadow-[0_18px_40px_rgba(2,6,23,0.28)] backdrop-blur-md">
                       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200">Current focus</p>
                       <p className="mt-1 text-sm font-semibold sm:text-base">{profile?.role || 'Full Stack Developer'}</p>
                       <p className="mt-2 text-xs leading-relaxed text-slate-200 sm:text-sm">
